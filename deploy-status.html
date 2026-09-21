@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bottled Slowly AI - Proje Durumu</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      margin: 0 0 16px;
+      font-size: 2rem;
+      background: linear-gradient(135deg, #fbbf24, #a78bfa, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    h2 {
+      margin: 0 0 16px;
+      font-size: 1.25rem;
+      color: #fbbf24;
+    }
+    .status {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    .links a {
+      display: block;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .links a:hover {
+      background: rgba(255,255,255,0.15);
+      transform: translateX(4px);
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+    .code {
+      background: rgba(0,0,0,0.3);
+      padding: 16px;
+      border-radius: 12px;
+      font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .step-number {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #7c3aed;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+    .footer {
+      text-align: center;
+      padding: 40px 0;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Bottled Slowly AI</h1>
+      <p style="margin-bottom: 20px; color: #cbd5e1;">
+        AI destekli, yavaş teslimatlı mesajlaşma uygulaması.
+      </p>
+      <span class="status">Hazır — Deploy Bekliyor</span>
+    </div>
+
+    <div class="card">
+      <h2>Hızlı Bağlantılar</h2>
+      <div class="links">
+        <a href="https://github.com/Velicanademoglu/bottled-slowly-ai" target="_blank">GitHub Reposu</a>
+        <a href="https://dashboard.render.com/" target="_blank">Render Dashboard</a>
+        <a href="https://vercel.com/dashboard" target="_blank">Vercel Dashboard</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Son Eklenen Özellikler</h2>
+      <ul>
+        <li><strong>PWA desteği:</strong> Telefona ekleme, offline çalışma, service worker</li>
+        <li><strong>AI personları:</strong> Samimi, romantik, eğlenceli, derin, şiirsel, gizemli</li>
+        <li><strong>AI yanıt önerileri:</strong> Sohbete uygun 3 öneri</li>
+        <li><strong>Mesaj şablonları:</strong> Sık kullanılan mesajları kaydet, düzenle, sil</li>
+        <li><strong>Açık / koyu tema:</strong> Profil sayfasından geçiş</li>
+        <li><strong>PostgreSQL:</strong> Bulut için hazır Prisma schema ve migration</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Deploy Adımları</h2>
+      
+      <div class="step">
+        <div class="step-number">1</div>
+        <div>
+          <strong>Vercel'e giriş yap</strong>
+          <div class="code">vercel login</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div>
+          <strong>Render'da Blueprint kullan</strong>
+          <p style="margin: 0; color: #cbd5e1;">
+            Dashboard'da "New +" → "Blueprint" seç, GitHub repo'sunu bağla. 
+            <code>render.yaml</code> otomatik PostgreSQL ve Web Service kurar.
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <div>
+          <strong>Vercel'den frontend deploy et</strong>
+          <div class="code">vercel --prod</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">4</div>
+        <div>
+          <strong>Çevre değişkenlerini ayarla</strong>
+          <ul style="margin-top: 8px; color: #cbd5e1;">
+            <li>Render → <code>FRONTEND_URL</code>: Vercel URL'n</li>
+            <li>Vercel → <code>VITE_API_URL</code>: Render backend URL'n</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Canlı URL'ler (Deploy Sonrası)</h2>
+      <ul>
+        <li><strong>Frontend:</strong> Vercel deploy sonrası burada görünecek</li>
+        <li><strong>Backend:</strong> Render deploy sonrası burada görünecek</li>
+        <li><strong>Health Check:</strong> <code>GET /health</code></li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      Son güncelleme: 21 Eylül 2026
+    </div>
+  </div>
+</body>
+</html>
