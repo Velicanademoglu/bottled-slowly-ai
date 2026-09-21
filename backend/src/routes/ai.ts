@@ -1,46 +1,59 @@
 import { Router } from "express";
 import { z } from "zod";
-import { generateConversationStarter } from "../services/ai.js";
-import { prisma } from "../db.js";
+import { generateConversationStarter, generateReplySuggestions, PERSONAS, type PersonaKey } from "../services/ai.js";
 import type { AuthRequest } from "../auth.js";
 
 const router = Router();
 
-router.get("/starter", async (_req: AuthRequest, res) => {
-  const starter = await generateConversationStarter();
-  res.json({ starter });
+const starterSchema = z.object({
+  context: z.string().max(1000).optional(),
+  persona: z.enum(["romantic", "funny", "deep", "friendly", "poetic", "mysterious"]).optional(),
 });
 
-const createFromStarterSchema = z.object({
-  starter: z.string().min(1).max(500),
+const replySchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        sender: z.enum(["me", "them"]),
+        content: z.string().min(1).max(2000),
+      })
+    )
+    .max(50),
+  persona: z.enum(["romantic", "funny", "deep", "friendly", "poetic", "mysterious"]).optional(),
 });
 
-router.post("/conversations/from-starter", async (req: AuthRequest, res) => {
-  const userId = req.userId!;
-  const parsed = createFromStarterSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.flatten() });
-    return;
+router.get("/personas", (_req: AuthRequest, res) => {
+  res.json({ personas: PERSONAS });
+});
+
+router.post("/starter", async (req: AuthRequest, res) => {
+  try {
+    const parsed = starterSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.flatten() });
+      return;
+    }
+    const result = await generateConversationStarter(parsed.data.context, parsed.data.persona as PersonaKey | undefined);
+    res.json(result);
+  } catch (err) {
+    console.error("AI starter error:", err instanceof Error ? err.message : err);
+    res.status(500).json({ error: "Could not generate a starter right now." });
   }
+});
 
-  const { starter } = parsed.data;
-  const conversation = await prisma.conversation.create({
-    data: {
-      userId,
-      title: starter.slice(0, 60),
-      messages: {
-        create: {
-          content: starter,
-          senderType: "USER",
-          status: "PENDING",
-          deliveryDelayMin: 60,
-          visibleAfter: new Date(Date.now() + 60 * 60 * 1000),
-        },
-      },
-    },
-  });
-
-  res.status(201).json(conversation);
+router.post("/replies", async (req: AuthRequest, res) => {
+  try {
+    const parsed = replySchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.flatten() });
+      return;
+    }
+    const result = await generateReplySuggestions(parsed.data.messages, parsed.data.persona as PersonaKey | undefined);
+    res.json(result);
+  } catch (err) {
+    console.error("AI replies error:", err instanceof Error ? err.message : err);
+    res.status(500).json({ error: "Could not generate reply suggestions right now." });
+  }
 });
 
 export default router;

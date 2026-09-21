@@ -1,0 +1,12 @@
+# AdMob app-ads.txt placeholder
+# Replace the publisher ID below with your real AdMob publisher ID before distribution.
+# Get your publisher ID from AdMob: Apps > your app > App settings > app-ads.txt.
+#
+# Example:
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+#
+# After updating, host this file at the root of your marketing domain,
+# e.g. https://projectstar.app/app-ads.txt
+# The package name in AndroidManifest.xml must match the app registered in AdMob.
+
+google.com, pub-REPLACE_WITH_YOUR_ADMOB_PUBLISHER_ID, DIRECT, f08c47fec0942fa0

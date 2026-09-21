@@ -4,9 +4,27 @@ dist/
 *.db-journal
 .env
 .env.local
+.env.production
 .DS_Store
 .vercel
 *.log
 .vscode/
 .idea/
+
+# Build artifacts and binaries
+*.apk
+*.ipa
+*.xcarchive
+
+# Generated documents and reports
+*.docx
+*.pdf
+report_extracted/
+create-report.js
+token.json
+
+# User uploads and local data
+backend/uploads/
+backend/*.png
+
 

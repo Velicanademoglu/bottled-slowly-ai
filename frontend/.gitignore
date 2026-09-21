@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+android/app/keystore.properties
+android/app/*.keystore
+android/app/*.jks
+ios/App/App.xcarchive
+ios/DerivedData/
+.env
+.env.production

@@ -1,14 +1,26 @@
-# Bottled Slowly AI - MVP Prototipi
+# Bottled Slowly AI
 
-Yavaş teslimatlı, AI destekli konuşma başlatıcılı web tabanlı mesajlaşma uygulaması prototipi.
+AI destekli konuşma başlatıcılı, yavaş teslimatlı ve profil tabanlı arkadaşlık / mesajlaşma uygulaması.
 
 ## Teknik Stack
 
 - **Backend:** Node.js + Express + TypeScript
-- **Veritabanı:** PostgreSQL + Prisma ORM
-- **Frontend:** React + Vite + TypeScript
+- **Veritabanı:** SQLite + Prisma ORM (yerel geliştirmede; üretimde PostgreSQL'e geçilebilir)
+- **Frontend:** React + Vite + TypeScript + Tailwind CSS
 - **Kimlik doğrulama:** JWT
-- **AI:** OpenAI GPT-4o-mini API (düşük maliyetli) veya fallback
+- **AI:** OpenAI GPT-4o-mini API veya yerleşik fallback
+- **Güvenlik:** Helmet, express-rate-limit, bcrypt, güçlü şifre politikası
+
+## Özellikler
+
+- Kayıt / giriş (JWT, şifre güçlülük kontrolü)
+- Kullanıcı profili (biyografi, yaş, konum, ilgi alanları, avatar)
+- Diğer kullanıcıları keşfetme
+- Arkadaşlık isteği gönderme / kabul etme / reddetme
+- Yavaş teslimatlı mesajlaşma (mesaj belirli süre sonra ulaşır)
+- Mesaj durumları: Şişede / Yolda / Ulaştı
+- AI konuşma başlatıcı
+- Responsive, modern ve animasyonlu arayüz
 
 ## Yerel Kurulum
 
@@ -21,12 +33,12 @@ cd ..
 
 # 2. Ortam değişkenlerini ayarla
 # .env.example dosyalarını kopyala ve kendi değerlerini gir
-# Yerel geliştirme için PostgreSQL çalıştırıyor olmalısın.
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 
 # 3. Veritabanını oluştur
 cd backend
-npx prisma migrate dev --name init
-npx prisma generate
+npx prisma db push
 cd ..
 
 # 4. Hem backend hem frontend'i aynı anda çalıştır
@@ -42,8 +54,8 @@ Uygulama:
 Backend `.env` için:
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/bottled_slowly_ai?schema=public"
-JWT_SECRET="degistir-bu-gizli-anahtari"
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="degistir-bu-gizli-anahtari-uretimde-kesinlikle-guclu-olmalidir"
 OPENAI_API_KEY=""
 PORT=3001
 FRONTEND_URL="http://localhost:5173"
@@ -55,51 +67,21 @@ Frontend `.env` için:
 VITE_API_URL=http://localhost:3001
 ```
 
-## Deploy
-
-### 1. GitHub'a push et
+## Geliştirme Komutları
 
 ```bash
-git init
-git add .
-git commit -m "initial MVP"
-git remote add origin https://github.com/Velicanademoglu/bottled-slowly-ai.git
-git push -u origin main
+npm run dev      # backend + frontend eşzamanlı
+npm run backend  # sadece backend
+npm run frontend # sadece frontend
 ```
 
-### 2. Render'da backend deploy
+## Güvenlik
 
-- [Render Dashboard](https://dashboard.render.com/)'a git
-- "New +" → "Blueprint" seç ve repo'daki `render.yaml` kullan
-- Veya elle:
-  - "New +" → "PostgreSQL" → ücretsiz veritabanı oluştur
-  - "New +" → "Web Service" → GitHub repo'sunu bağla
-  - Root directory: `backend`
-  - Build Command: `npm install && npx prisma migrate deploy && npx prisma generate && npm run build`
-  - Start Command: `npm start`
-  - Environment Variables:
-    - `DATABASE_URL`: Render PostgreSQL connection string
-    - `JWT_SECRET`: güçlü rastgele string
-    - `OPENAI_API_KEY`: (opsiyonel) boş bırakılırsa fallback çalışır
-    - `PORT`: 3001
-    - `FRONTEND_URL`: Vercel frontend URL'n (deploy sonrası güncelle)
-
-### 3. Vercel'de frontend deploy
-
-```bash
-# Vercel CLI yüklü değilse
-npm i -g vercel
-
-# Deploy et
-vercel
-```
-
-Veya Vercel Dashboard üzerinden:
-- Proje import et
-- Framework preset: Vite
-- Build Command: `cd frontend && npm install && npm run build`
-- Output Directory: `frontend/dist`
-- Environment Variable: `VITE_API_URL=https://bottled-slowly-ai-api.onrender.com`
+- `helmet` ile güvenlik başlıkları
+- `express-rate-limit` ile API hız sınırlaması (auth endpointlerine ek kısıtlama)
+- Şifreler bcrypt ile hashlenir
+- JWT ile kimlik doğrulama
+- Şifre politikası: en az 8 karakter, bir harf ve bir rakam
 
 ## AI Fallback
 
@@ -114,12 +96,3 @@ Bu bir MVP prototipidir. Üretim kullanımına geçmeden önce:
 - Veri silme / dışa aktarma mekanizmaları eklenmeli
 - HTTPS ve güvenli JWT yönetimi zorunludur
 - AI API'ye gönderilen verilerin gizlilik politikası kullanıcıya açıklanmalı
-
-## Geliştirme Komutları
-
-```bash
-npm run dev      # backend + frontend eşzamanlı
-npm run backend  # sadece backend
-npm run frontend # sadece frontend
-```
-

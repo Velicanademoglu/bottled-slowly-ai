@@ -8,37 +8,413 @@ datasource db {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  email         String         @unique
-  username      String         @unique
-  passwordHash  String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  conversations Conversation[]
-  messages      Message[]
+  id                  Int                  @id @default(autoincrement())
+  email               String               @unique
+  username            String               @unique
+  passwordHash        String
+  role                String               @default("USER")
+  emailVerified       Boolean              @default(false)
+  status              String               @default("ACTIVE")
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  profile             Profile?
+  preferences         UserPreference?
+  languages           UserLanguage[]
+  interests           UserInterest[]
+  sessions            Session[]
+  passwordResets      PasswordReset[]
+  emailVerifications  EmailVerification[]
+  sentMessages        SpaceMessage[]       @relation("SpaceMessageSender")
+  stardust            UserStardust?
+  transactions        StardustTransaction[]
+  notifications       Notification[]
+  blocksInitiated     Block[]              @relation("BlockInitiator")
+  blocksReceived      Block[]              @relation("BlockTarget")
+  reportsInitiated    Report[]             @relation("ReportInitiator")
+  reportsReceived     Report[]             @relation("ReportTarget")
+  auditLogs           AdminAuditLog[]      @relation("AdminAuditLogAdmin")
+  analyticsEvents     AnalyticsEvent[]
+  premium             UserPremium?
+  boosts              UserBoost[]
+  templates           UserTemplate[]
+}
+
+model Profile {
+  id                  Int      @id @default(autoincrement())
+  userId              Int      @unique
+  birthDate           DateTime?
+  gender              String?
+  country             String?
+  bio                 String?
+  avatarUrl           String?
+  avatarPreset        String?
+  level               Int      @default(1)
+  gravity             Int      @default(500)
+  onboardingCompleted Boolean  @default(false)
+  completedSteps      String?  @default("[]")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserPreference {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @unique
+  preferredGender   String   @default("EVERYONE")
+  minAge            Int?
+  maxAge            Int?
+  conversationGoals String?  @default("[]")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserLanguage {
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  language String
+  level    String @default("INTERMEDIATE")
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, language])
+}
+
+model UserInterest {
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  interest String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([interest])
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  type      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId, type])
+}
+
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+}
+
+model EmailVerification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+}
+
+model AppSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  category  String   @default("general")
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([category])
+}
+
+model AdminAuditLog {
+  id         Int      @id @default(autoincrement())
+  adminId    Int?
+  action     String
+  targetType String
+  targetId   String
+  metadata   String?
+  createdAt  DateTime @default(now())
+  admin      User?    @relation("AdminAuditLogAdmin", fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+model AnalyticsEvent {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  event     String
+  payload   String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([event, createdAt])
+  @@index([userId])
+}
+
+model UserStardust {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  balance   Int      @default(0)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model StardustTransaction {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  type          String
+  amount        Int
+  balanceBefore Int
+  balanceAfter  Int
+  source        String
+  metadata      String?
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  metadata  String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+}
+
+model Block {
+  id          Int      @id @default(autoincrement())
+  initiatorId Int
+  targetId    Int
+  reason      String?
+  createdAt   DateTime @default(now())
+  initiator   User     @relation("BlockInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  target      User     @relation("BlockTarget", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([initiatorId, targetId])
+}
+
+model Report {
+  id          Int      @id @default(autoincrement())
+  initiatorId Int
+  targetId    Int
+  category    String
+  description String?
+  status      String   @default("OPEN")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  initiator   User     @relation("ReportInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  target      User     @relation("ReportTarget", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([targetId])
+}
+
+model MessageVessel {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  name        String
+  description String?
+  tier        String   @default("free")
+  price       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model SpaceMessage {
+  id          Int            @id @default(autoincrement())
+  senderId    Int
+  content     String
+  vesselKey   String
+  status      String         @default("draft")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  launchedAt  DateTime?
+  sender      User           @relation("SpaceMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  journeys    MessageJourney[]
+
+  @@index([senderId, status])
+}
+
+model MessageJourney {
+  id                 Int                @id @default(autoincrement())
+  messageId          Int
+  currentRecipientId Int?
+  status             String             @default("launched")
+  passes             Int                @default(0)
+  accepts            Int                @default(0)
+  distanceKm         Int                @default(0)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  message            SpaceMessage       @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  recipients         MessageRecipient[]
+  events             JourneyEvent[]
+
+  @@index([status])
+}
+
+model MessageRecipient {
+  id        Int            @id @default(autoincrement())
+  journeyId Int
+  userId    Int
+  status    String         @default("pending")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  journey   MessageJourney @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([journeyId, userId])
+}
+
+model JourneyEvent {
+  id        Int            @id @default(autoincrement())
+  journeyId Int
+  type      String
+  metadata  String?
+  lat       Float?
+  lng       Float?
+  country   String?
+  createdAt DateTime       @default(now())
+  journey   MessageJourney @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId, createdAt])
+}
+
+model Connection {
+  id        Int      @id @default(autoincrement())
+  userAId   Int
+  userBId   Int
+  messageId Int?
+  createdAt DateTime @default(now())
+
+  @@unique([userAId, userBId])
 }
 
 model Conversation {
-  id        Int       @id @default(autoincrement())
+  id        Int               @id @default(autoincrement())
   title     String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages  Message[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  messages  ChatMessage[]
+  members   ConversationMember[]
 }
 
-model Message {
-  id               Int          @id @default(autoincrement())
-  content          String
-  senderType       String       @default("USER")
-  status           String       @default("PENDING")
-  deliveryDelayMin Int          @default(60)
-  visibleAfter     DateTime?
-  createdAt        DateTime     @default(now())
-  deliveredAt      DateTime?
-  conversationId   Int
-  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  userId           Int?
-  user             User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+model ConversationMember {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  userId         Int
+  joinedAt       DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
 }
+
+model ChatMessage {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  senderId       Int
+  content        String
+  type           String       @default("text")
+  mediaUrl       String?
+  mediaMeta      String?
+  read           Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+model Boost {
+  id          Int         @id @default(autoincrement())
+  key         String      @unique
+  name        String
+  description String?
+  price       Int         @default(0)
+  durationMin Int?
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  userBoosts  UserBoost[]
+}
+
+model UserBoost {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  boostId   Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  boost     Boost    @relation(fields: [boostId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model UserPremium {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  active    Boolean  @default(true)
+  expiresAt DateTime
+  productId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DailyMission {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  title       String
+  description String?
+  reward      Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model UserMission {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  missionId Int
+  progress  Int      @default(0)
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserStreak {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastClaimedAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model UserTemplate {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+

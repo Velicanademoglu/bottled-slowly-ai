@@ -1,0 +1,27 @@
+{
+  "name": "Bottled Slowly AI",
+  "short_name": "Bottled",
+  "description": "AI destekli yavaş mesajlaşma uygulaması",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": ["social", "lifestyle"],
+  "icons": [
+    { "src": "/icons/icon-48.webp", "sizes": "48x48", "type": "image/webp", "purpose": "any maskable" },
+    { "src": "/icons/icon-72.webp", "sizes": "72x72", "type": "image/webp", "purpose": "any maskable" },
+    { "src": "/icons/icon-96.webp", "sizes": "96x96", "type": "image/webp", "purpose": "any maskable" },
+    { "src": "/icons/icon-128.webp", "sizes": "128x128", "type": "image/webp", "purpose": "any maskable" },
+    { "src": "/icons/icon-192.webp", "sizes": "192x192", "type": "image/webp", "purpose": "any maskable" },
+    { "src": "/icons/icon-256.webp", "sizes": "256x256", "type": "image/webp", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "/screenshots/space.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow" },
+    { "src": "/screenshots/discover.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow" }
+  ]
+}

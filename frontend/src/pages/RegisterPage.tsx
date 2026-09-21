@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { authApi, setAuthToken } from "../api";
+import { useTranslation } from "react-i18next";
+import { authApi, setAuthToken } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
+import { useBrandConfig } from "../hooks/useBrandConfig";
+import Alert from "../components/Alert";
+import { Mail, Lock, User, Loader2, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
+  const { name } = useBrandConfig();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -20,68 +26,103 @@ export default function RegisterPage() {
       const { data } = await authApi.register(email, username, password);
       setAuthToken(data.token);
       login(data.user, data.token);
-      navigate("/");
+      navigate("/onboarding");
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
-        "Kayıt başarısız";
-      setError(typeof msg === "string" ? msg : "Kayıt başarısız");
+      const axiosErr = err as { response?: { data?: { error?: string | { formErrors?: string[]; fieldErrors?: Record<string, string[]> } } } };
+      const raw = axiosErr.response?.data?.error;
+      let msg = t("common.error");
+      if (typeof raw === "string") msg = raw;
+      else if (raw?.formErrors?.length) msg = raw.formErrors.join(", ");
+      else if (raw?.fieldErrors) {
+        msg = Object.values(raw.fieldErrors)
+          .flat()
+          .join(", ");
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-ocean-900 mb-6 text-center">Kayıt Ol</h2>
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-posta</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent outline-none"
-              required
-            />
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md animate-slide-up">
+        <div className="card p-8">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <Sparkles className="w-6 h-6 text-star-400" />
+              <span className="text-xl font-bold text-gradient">{name}</span>
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-2">{t("auth.register")}</h2>
+            <p className="text-gray-400">{t("slogan")}</p>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Kullanıcı adı</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-ocean-500 focus:border-transparent outline-none"
-              required
-              minLength={6}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2.5 bg-ocean-600 text-white rounded-lg hover:bg-ocean-500 disabled:opacity-60 transition font-medium"
-          >
-            {loading ? "Kaydediliyor..." : "Kayıt Ol"}
-          </button>
-        </form>
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Zaten hesabın var mı?{" "}
-          <Link to="/login" className="text-ocean-600 hover:underline font-medium">Giriş yap</Link>
-        </p>
+
+          {error && <Alert type="error" className="mb-5">{error}</Alert>}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="relative">
+              <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t("auth.email")}
+                className="input-field pl-12"
+                required
+              />
+            </div>
+            <div className="relative">
+              <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t("auth.username")}
+                className="input-field pl-12"
+                required
+                minLength={2}
+              />
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("auth.password")}
+                className="input-field pl-12"
+                required
+                minLength={8}
+              />
+            </div>
+
+            <div className="flex items-start gap-2 text-xs text-gray-500">
+              <ShieldCheck className="w-4 h-4 mt-0.5 text-cosmic-500" />
+              <span>{t("auth.passwordHint")}</span>
+            </div>
+
+            <button type="submit" disabled={loading} className="btn-primary w-full">
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t("common.loading")}
+                </>
+              ) : (
+                <>
+                  {t("auth.register")}
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-gray-400">
+            {t("auth.hasAccount")}{" "}
+            <Link to="/login" className="font-semibold text-star-400 hover:text-star-300">
+              {t("auth.login")}
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
