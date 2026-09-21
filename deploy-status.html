@@ -115,7 +115,10 @@
       <p style="margin-bottom: 20px; color: #cbd5e1;">
         AI destekli, yavaş teslimatlı mesajlaşma uygulaması.
       </p>
-      <span class="status">Hazır — Deploy Bekliyor</span>
+      <span class="status">Kod gönderildi — Render & Vercel deploy bekleniyor</span>
+      <p style="margin-top: 12px; color: #cbd5e1; font-size: 0.875rem;">
+        Son commit: <code>2273f2c</code> · main dalı GitHub'a pushlandı.
+      </p>
     </div>
 
     <div class="card">
@@ -182,10 +185,18 @@
     </div>
 
     <div class="card">
+      <h2>Yerel Çalışma Durumu</h2>
+      <ul style="color: #cbd5e1;">
+        <li><strong>Frontend:</strong> <a href="http://localhost:5173" target="_blank">http://localhost:5173</a> (✅ çalışıyor)</li>
+        <li><strong>Backend:</strong> <a href="http://localhost:3001/health" target="_blank">http://localhost:3001</a> (✅ health check OK)</li>
+      </ul>
+    </div>
+
+    <div class="card">
       <h2>Canlı URL'ler (Deploy Sonrası)</h2>
-      <ul>
-        <li><strong>Frontend:</strong> Vercel deploy sonrası burada görünecek</li>
-        <li><strong>Backend:</strong> Render deploy sonrası burada görünecek</li>
+      <ul style="color: #cbd5e1;">
+        <li><strong>Frontend (Vercel):</strong> Henüz deploy edilmedi — dashboard'dan kontrol edin</li>
+        <li><strong>Backend (Render):</strong> Henüz deploy edilmedi — dashboard'dan kontrol edin</li>
         <li><strong>Health Check:</strong> <code>GET /health</code></li>
       </ul>
     </div>
