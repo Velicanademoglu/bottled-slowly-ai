@@ -5,11 +5,12 @@ AI destekli konuşma başlatıcılı, yavaş teslimatlı ve profil tabanlı arka
 ## Teknik Stack
 
 - **Backend:** Node.js + Express + TypeScript
-- **Veritabanı:** SQLite + Prisma ORM (yerel geliştirmede; üretimde PostgreSQL'e geçilebilir)
+- **Veritabanı:** PostgreSQL + Prisma ORM (üretim); SQLite yerel geliştirmede `prisma db push` ile
 - **Frontend:** React + Vite + TypeScript + Tailwind CSS
 - **Kimlik doğrulama:** JWT
 - **AI:** OpenAI GPT-4o-mini API veya yerleşik fallback
 - **Güvenlik:** Helmet, express-rate-limit, bcrypt, güçlü şifre politikası
+- **PWA:** vite-plugin-pwa ile service worker ve offline desteği
 
 ## Özellikler
 
@@ -19,7 +20,12 @@ AI destekli konuşma başlatıcılı, yavaş teslimatlı ve profil tabanlı arka
 - Arkadaşlık isteği gönderme / kabul etme / reddetme
 - Yavaş teslimatlı mesajlaşma (mesaj belirli süre sonra ulaşır)
 - Mesaj durumları: Şişede / Yolda / Ulaştı
-- AI konuşma başlatıcı
+- AI konuşma başlatıcı (6 farklı persona)
+- AI yanıt önerileri
+- Mesaj şablonları
+- Açık / koyu tema geçişi
+- PWA desteği
+- Admin paneli, raporlama, stardust ödül sistemi
 - Responsive, modern ve animasyonlu arayüz
 
 ## Yerel Kurulum
@@ -54,7 +60,7 @@ Uygulama:
 Backend `.env` için:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://user:password@localhost:5432/bottled_slowly_ai?schema=public"
 JWT_SECRET="degistir-bu-gizli-anahtari-uretimde-kesinlikle-guclu-olmalidir"
 OPENAI_API_KEY=""
 PORT=3001
@@ -66,6 +72,29 @@ Frontend `.env` için:
 ```env
 VITE_API_URL=http://localhost:3001
 ```
+
+## Deploy
+
+### Render (Backend)
+
+1. [Render Dashboard](https://dashboard.render.com/)'a git.
+2. "New +" → "Blueprint" seç ve repo'daki `render.yaml` kullan.
+3. Render otomatik olarak ücretsiz PostgreSQL ve Web Service oluşturur.
+4. Build sonrası `FRONTEND_URL` değişkenini Vercel URL'n ile güncelle.
+
+### Vercel (Frontend)
+
+```bash
+npm i -g vercel
+vercel
+```
+
+Veya Vercel Dashboard üzerinden:
+- Proje import et
+- Framework preset: Vite
+- Build Command: `cd frontend && npm install && npm run build`
+- Output Directory: `frontend/dist`
+- Environment Variable: `VITE_API_URL=https://bottled-slowly-ai-api.onrender.com`
 
 ## Geliştirme Komutları
 
