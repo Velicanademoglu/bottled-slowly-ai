@@ -69,7 +69,7 @@ app.use(
 
 app.use(
   cors({
-    origin: isDev ? [true, /.*/] : FRONTEND_URL,
+    origin: true,
     credentials: true,
   })
 );
