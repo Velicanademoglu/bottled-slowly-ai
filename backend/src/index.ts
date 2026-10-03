@@ -127,6 +127,19 @@ app.use("/api/admin/users-extra", authMiddleware, requireAdmin, adminUsersExtraR
 
 app.use(errorHandler);
 
+// Serve built frontend (single-container production deployment)
+const staticDir = process.env.STATIC_DIR || path.resolve(process.cwd(), "..", "frontend", "dist");
+if (fs.existsSync(staticDir)) {
+  app.use(express.static(staticDir));
+  app.get("*", (req, res) => {
+    if (req.path.startsWith("/api/") || req.path.startsWith("/uploads/")) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+    res.sendFile(path.join(staticDir, "index.html"));
+  });
+}
+
 createSocketServer(server);
 
 server.listen(PORT, "0.0.0.0", () => {
