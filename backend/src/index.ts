@@ -111,7 +111,15 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/api/ping", (_req, res) => {
-  res.json({ pong: true, dbUrl: process.env.DATABASE_URL ? process.env.DATABASE_URL.split("@").pop() : null });
+  const present = Object.keys(process.env)
+    .filter((k) => /DATABASE|POSTGRES|SUPABASE|PG_|VERDENT/i.test(k))
+    .map((k) => k);
+  res.json({
+    pong: true,
+    dbUrlSet: !!process.env.DATABASE_URL,
+    dbHost: process.env.DATABASE_URL ? process.env.DATABASE_URL.split("@").pop() : null,
+    relatedEnvKeys: present,
+  });
 });
 
 app.get("/api/dbtest", async (_req, res) => {
