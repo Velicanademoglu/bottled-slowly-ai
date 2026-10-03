@@ -15,6 +15,7 @@
   "dependencies": {
     "@amplifiedhq/countries-atlas": "^2.0.0",
     "@prisma/client": "^5.16.0",
+    "@supabase/supabase-js": "^2.117.2",
     "@types/multer": "^2.2.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

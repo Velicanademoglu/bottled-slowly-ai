@@ -117,7 +117,7 @@ app.get("/api/ping", (_req, res) => {
   res.json({
     pong: true,
     dbUrlSet: !!process.env.DATABASE_URL,
-    dbHost: process.env.DATABASE_URL ? process.env.DATABASE_URL.split("@").pop() : null,
+    supabaseDbUrlSet: !!process.env.SUPABASE_DATABASE_URL,
     relatedEnvKeys: present,
   });
 });
