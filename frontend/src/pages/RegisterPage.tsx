@@ -13,6 +13,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [tosAccepted, setTosAccepted] = useState(false);
+  const [adultConfirmed, setAdultConfirmed] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -21,9 +23,13 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!tosAccepted || !adultConfirmed) {
+      setError(t("auth.consentRequired"));
+      return;
+    }
     setLoading(true);
     try {
-      const { data } = await authApi.register(email, username, password);
+      const { data } = await authApi.register(email, username, password, tosAccepted, adultConfirmed);
       setAuthToken(data.token);
       login(data.user, data.token);
       navigate("/onboarding");
@@ -101,7 +107,37 @@ export default function RegisterPage() {
               <span>{t("auth.passwordHint")}</span>
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full">
+            <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={adultConfirmed}
+                onChange={(e) => setAdultConfirmed(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-gray-600 bg-space-800 accent-star-500"
+              />
+              <span>{t("auth.adultConfirm")}</span>
+            </label>
+
+            <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={tosAccepted}
+                onChange={(e) => setTosAccepted(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-gray-600 bg-space-800 accent-star-500"
+              />
+              <span>
+                {t("auth.tosAcceptPrefix")}{" "}
+                <Link to="/terms" className="text-star-400 hover:text-star-300 underline" target="_blank">
+                  {t("auth.termsLink")}
+                </Link>{" "}
+                {t("auth.tosAcceptAnd")}{" "}
+                <Link to="/privacy" className="text-star-400 hover:text-star-300 underline" target="_blank">
+                  {t("auth.privacyLink")}
+                </Link>
+                {t("auth.tosAcceptSuffix")}
+              </span>
+            </label>
+
+            <button type="submit" disabled={loading || !tosAccepted || !adultConfirmed} className="btn-primary w-full">
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />

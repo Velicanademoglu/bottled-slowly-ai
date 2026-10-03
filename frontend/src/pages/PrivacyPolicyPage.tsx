@@ -32,7 +32,10 @@ export default function PrivacyPolicyPage() {
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-white">4. Data Retention and Deletion</h2>
           <p>
-            You can request account deletion at any time. We will remove your profile data within 30 days, except where required by law.
+            You can delete your account at any time from Profile → Data &amp; Privacy → "Delete my account". Deletion is immediate: your profile and personal data are anonymized and you lose access to your account. Some records may be retained where required by law.
+          </p>
+          <p>
+            You can also download a copy of all your personal data at any time from Profile → Data &amp; Privacy → "Export my data" (KVKK/GDPR right to data portability).
           </p>
         </section>
 

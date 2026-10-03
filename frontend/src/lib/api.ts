@@ -41,8 +41,8 @@ export function getAuthToken(): string | null {
 export const authApi = {
   login: (email: string, password: string) =>
     api.post<AuthResponse>("/api/auth/login", { email, password }),
-  register: (email: string, username: string, password: string) =>
-    api.post<AuthResponse>("/api/auth/register", { email, username, password }),
+  register: (email: string, username: string, password: string, tosAccepted: boolean, adultConfirmed: boolean) =>
+    api.post<AuthResponse>("/api/auth/register", { email, username, password, tosAccepted, adultConfirmed }),
   forgotPassword: (email: string) => api.post<{ ok: boolean }>("/api/auth/forgot-password", { email }),
   resetPassword: (token: string, password: string) =>
     api.post<{ ok: boolean }>("/api/auth/reset-password", { token, password }),
@@ -71,6 +71,9 @@ export const profileApi = {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
+  exportData: () => api.get<Blob>("/api/profile/export", { responseType: "blob" }),
+  deleteAccount: (password: string) =>
+    api.delete<{ ok: boolean }>("/api/profile/me", { data: { password } }),
 };
 
 export const usersApi = {

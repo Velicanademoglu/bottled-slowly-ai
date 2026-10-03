@@ -278,4 +278,99 @@ router.delete("/interests/:interest", async (req: AuthRequest, res) => {
   res.json({ ok: true });
 });
 
+const deleteAccountSchema = z.object({
+  password: z.string().min(1, "Password is required"),
+});
+
+// GDPR/KVKK data export — returns all personal data as JSON
+router.get("/export", async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      profile: true,
+      preferences: true,
+      languages: true,
+      interests: true,
+      stardust: true,
+      transactions: true,
+      notifications: true,
+      sentMessages: true,
+      reportsInitiated: true,
+      blocksInitiated: true,
+      premium: true,
+    },
+  });
+
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  const conversations = await prisma.conversation.findMany({
+    where: { members: { some: { userId } } },
+    include: { messages: { where: { senderId: userId } } },
+  });
+
+  const { passwordHash: _ph, ...safeUser } = user;
+
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Content-Disposition", `attachment; filename="projectstar-data-export-${userId}.json"`);
+  res.json({
+    exportedAt: new Date().toISOString(),
+    user: safeUser,
+    conversations,
+  });
+});
+
+// Account deletion — required by Google Play & App Store policies
+router.delete("/me", async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const parsed = deleteAccountSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  const { comparePassword } = await import("../auth.js");
+  const ok = await comparePassword(parsed.data.password, user.passwordHash);
+  if (!ok) {
+    res.status(403).json({ error: "Incorrect password" });
+    return;
+  }
+
+  // Anonymize instead of hard delete to preserve conversation integrity
+  const anonymizedEmail = `deleted-${userId}@deleted.projectstar.app`;
+  const anonymizedUsername = `deleted_user_${userId}`;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.profile.updateMany({
+      where: { userId },
+      data: { bio: null, avatarUrl: null, avatarPreset: null, birthDate: null, gender: null, country: null },
+    });
+    await tx.userLanguage.deleteMany({ where: { userId } });
+    await tx.userInterest.deleteMany({ where: { userId } });
+    await tx.session.deleteMany({ where: { userId } });
+    await tx.userPremium.deleteMany({ where: { userId } });
+    await tx.user.update({
+      where: { id: userId },
+      data: {
+        email: anonymizedEmail,
+        username: anonymizedUsername,
+        passwordHash: "DELETED",
+        status: "DELETED",
+        deletedAt: new Date(),
+      },
+    });
+  });
+
+  res.json({ ok: true });
+});
+
 export default router;

@@ -18,6 +18,8 @@ const registerSchema = z.object({
   email: z.string().email("Invalid email"),
   username: z.string().min(2, "Username too short").max(30, "Username too long"),
   password: passwordSchema,
+  tosAccepted: z.literal(true, { errorMap: () => ({ message: "You must accept the Terms of Service and Privacy Policy" }) }),
+  adultConfirmed: z.literal(true, { errorMap: () => ({ message: "You must confirm you are 18 or older" }) }),
 });
 
 const loginSchema = z.object({
@@ -91,11 +93,14 @@ router.post("/register", async (req, res) => {
   }
 
   const passwordHash = await hashPassword(password);
+  const consentAt = new Date();
   const user = await prisma.user.create({
     data: {
       email,
       username,
       passwordHash,
+      tosAcceptedAt: consentAt,
+      adultConfirmedAt: consentAt,
       profile: { create: {} },
       preferences: { create: {} },
       stardust: { create: { balance: 100 } },
@@ -137,7 +142,7 @@ router.post("/login", async (req, res) => {
     return;
   }
 
-  if (user.status === "BANNED" || user.status === "SUSPENDED") {
+  if (user.status === "BANNED" || user.status === "SUSPENDED" || user.status === "DELETED") {
     res.status(403).json({ error: "Account is not active" });
     return;
   }

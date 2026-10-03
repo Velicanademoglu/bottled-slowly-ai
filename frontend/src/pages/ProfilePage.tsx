@@ -10,13 +10,13 @@ import { COUNTRIES } from "../lib/countries";
 import type { Profile, User } from "../types";
 import { Link } from "react-router-dom";
 import { useTheme } from "../hooks/useTheme";
-import { Save, User as UserIcon, Calendar, Loader2, CheckCircle2, Camera, X, Sparkles, Crown, Gauge, FileText, Sun, Moon } from "lucide-react";
+import { Save, User as UserIcon, Calendar, Loader2, CheckCircle2, Camera, X, Sparkles, Crown, Gauge, FileText, Sun, Moon, Download, Trash2, ShieldAlert } from "lucide-react";
 
 const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({ value: c.name, label: c.name, suffix: c.flag }));
 
 export default function ProfilePage() {
   const { t } = useTranslation();
-  const { user, login } = useAuth();
+  const { user, login, logout } = useAuth();
   const { theme, toggle } = useTheme();
   const [profile, setProfile] = useState<Partial<Profile>>({});
   const [me, setMe] = useState<User | null>(user || null);
@@ -26,6 +26,11 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -92,6 +97,39 @@ export default function ProfilePage() {
   const clearAvatar = () => {
     setPreviewUrl(null);
     setProfile((p) => ({ ...p, avatarUrl: "", avatarPreset: "" }));
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const { data } = await profileApi.exportData();
+      const url = URL.createObjectURL(data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `projectstar-data-export-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError(t("common.error"));
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deletePassword) return;
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      await profileApi.deleteAccount(deletePassword);
+      logout();
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string | { formErrors?: string[] } } } };
+      const raw = axiosErr.response?.data?.error;
+      setDeleteError(typeof raw === "string" ? raw : t("common.error"));
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const completion = me?.completion ?? 0;
@@ -286,6 +324,64 @@ export default function ProfilePage() {
                 </>
               )}
             </button>
+          </div>
+        </div>
+
+        <div className="card p-6 sm:p-8 space-y-4">
+          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-star-400" />
+            {t("profile.dataPrivacy")}
+          </h2>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p className="font-medium text-gray-200">{t("profile.exportData")}</p>
+              <p className="text-sm text-gray-500">{t("profile.exportDataHint")}</p>
+            </div>
+            <button onClick={handleExport} disabled={exporting} className="btn-secondary shrink-0">
+              {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {t("profile.exportData")}
+            </button>
+          </div>
+
+          <div className="border-t border-white/10 pt-4">
+            {!showDelete ? (
+              <button
+                onClick={() => setShowDelete(true)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition"
+              >
+                <Trash2 className="w-4 h-4" />
+                {t("profile.deleteAccount")}
+              </button>
+            ) : (
+              <div className="space-y-3 rounded-xl border border-red-500/30 bg-red-500/5 p-4">
+                <p className="text-sm text-red-300">{t("profile.deleteWarning")}</p>
+                {deleteError && <Alert type="error">{deleteError}</Alert>}
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder={t("auth.password")}
+                  className="input-field"
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting || !deletePassword}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 text-white hover:bg-red-500 transition disabled:opacity-50"
+                  >
+                    {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    {t("profile.deleteConfirm")}
+                  </button>
+                  <button
+                    onClick={() => { setShowDelete(false); setDeletePassword(""); setDeleteError(""); }}
+                    className="btn-secondary"
+                  >
+                    {t("common.cancel")}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

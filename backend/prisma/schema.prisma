@@ -15,6 +15,9 @@ model User {
   role                String               @default("USER")
   emailVerified       Boolean              @default(false)
   status              String               @default("ACTIVE")
+  tosAcceptedAt       DateTime?
+  adultConfirmedAt    DateTime?
+  deletedAt           DateTime?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   profile             Profile?
