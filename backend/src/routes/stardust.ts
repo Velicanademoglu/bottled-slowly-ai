@@ -9,7 +9,18 @@ import {
   getMissionsWithProgress,
   completeMission,
   rewardProfileCompletion,
+  addTransaction,
 } from "../services/stardust.js";
+
+const AD_REWARD_TYPES = ["stardust", "boost", "extra_cast", "journey", "mystery"] as const;
+const AD_REWARD_AMOUNTS: Record<string, number> = {
+  stardust: 25,
+  mystery: 40,
+};
+const AD_DAILY_LIMIT = 10;
+const AD_COOLDOWN_MS = 60_000;
+
+const adRewardClaims = new Map<number, number[]>();
 
 const router = Router();
 
@@ -73,6 +84,61 @@ router.post("/missions/:key/complete", async (req: AuthRequest, res) => {
     const message = err instanceof Error ? err.message : "Failed to complete mission";
     res.status(400).json({ error: message });
   }
+});
+
+const adRewardSchema = z.object({
+  rewardType: z.enum(AD_REWARD_TYPES),
+  adNetwork: z.string().max(50).optional(),
+  adUnitId: z.string().max(100).optional(),
+});
+
+// Rewarded ad claim — client calls this only after the ad SDK confirms completion.
+// Rate-limited per user: cooldown + daily cap. Reward amounts are server-side config.
+router.post("/ad-reward", async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const parsed = adRewardSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() });
+    return;
+  }
+
+  const now = Date.now();
+  const dayStart = new Date();
+  dayStart.setHours(0, 0, 0, 0);
+
+  // In-memory sliding window: cooldown + daily cap (per process; DB ledger enforces audit)
+  const claims = (adRewardClaims.get(userId) || []).filter((ts) => ts > dayStart.getTime());
+  if (claims.length > 0 && now - claims[claims.length - 1] < AD_COOLDOWN_MS) {
+    res.status(429).json({ error: "Please wait before watching another ad" });
+    return;
+  }
+  if (claims.length >= AD_DAILY_LIMIT) {
+    res.status(429).json({ error: "Daily ad reward limit reached" });
+    return;
+  }
+
+  // DB-level daily cap check (survives restarts, counts ledger)
+  const todayClaims = await prisma.stardustTransaction.count({
+    where: { userId, source: "ad_reward", createdAt: { gte: dayStart } },
+  });
+  if (todayClaims >= AD_DAILY_LIMIT) {
+    res.status(429).json({ error: "Daily ad reward limit reached" });
+    return;
+  }
+
+  const { rewardType } = parsed.data;
+  const amount = AD_REWARD_AMOUNTS[rewardType] ?? 25;
+
+  const result = await addTransaction(userId, "credit", amount, "ad_reward", {
+    rewardType,
+    adNetwork: parsed.data.adNetwork || null,
+    adUnitId: parsed.data.adUnitId || null,
+  });
+
+  claims.push(now);
+  adRewardClaims.set(userId, claims);
+
+  res.json({ ok: true, balance: result.stardust.balance, amount, rewardType });
 });
 
 export default router;
