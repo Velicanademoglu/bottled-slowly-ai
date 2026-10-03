@@ -110,6 +110,20 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
 
+app.get("/api/ping", (_req, res) => {
+  res.json({ pong: true, dbUrl: process.env.DATABASE_URL ? process.env.DATABASE_URL.split("@").pop() : null });
+});
+
+app.get("/api/dbtest", async (_req, res) => {
+  try {
+    const { prisma } = await import("./db.js");
+    const count = await prisma.user.count();
+    res.json({ dbOk: true, users: count });
+  } catch (err) {
+    res.status(500).json({ dbOk: false, error: err instanceof Error ? err.message : String(err) });
+  }
+});
+
 app.get("/api/app/config", async (_req, res) => {
   const slogan = await getSetting("app.slogan", "Someone out there is waiting.");
   const brandName = await getSetting("app.name", APP_NAME);
