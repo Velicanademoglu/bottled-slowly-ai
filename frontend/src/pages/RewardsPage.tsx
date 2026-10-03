@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { stardustApi } from "../lib/api";
-import { Sparkles, Star, Gift, CheckCircle2, Loader2, Clock, AlertCircle } from "lucide-react";
+import { showRewardedAd } from "../lib/ads";
+import { Sparkles, Star, Gift, CheckCircle2, Loader2, Clock, AlertCircle, PlayCircle } from "lucide-react";
 import Alert from "../components/Alert";
 
 interface Mission {
@@ -33,6 +34,7 @@ export default function RewardsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [watchingAd, setWatchingAd] = useState(false);
 
   const load = async () => {
     try {
@@ -107,6 +109,28 @@ export default function RewardsPage() {
     }
   };
 
+  const handleWatchAd = async () => {
+    setWatchingAd(true);
+    setError("");
+    setMessage("");
+    try {
+      const earned = await showRewardedAd();
+      if (!earned) {
+        setError("Ad was not completed. No reward given.");
+        return;
+      }
+      const { data } = await stardustApi.claimAdReward("stardust");
+      setBalance(data.balance);
+      setMessage(`+${data.amount} Stardust! Thanks for watching.`);
+      await load();
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      setError(axiosErr.response?.data?.error || t("common.error"));
+    } finally {
+      setWatchingAd(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center text-gray-400">
@@ -166,6 +190,35 @@ export default function RewardsPage() {
               <>
                 <Sparkles className="w-4 h-4" />
                 Claim Daily Reward
+              </>
+            )}
+          </button>
+        </div>
+
+        <div className="card p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-cosmic-500/10 text-cosmic-400">
+              <PlayCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-white">Watch & Earn</h2>
+              <p className="text-sm text-gray-400">Watch a short ad to earn +25 Stardust.</p>
+            </div>
+          </div>
+          <button
+            onClick={handleWatchAd}
+            disabled={watchingAd}
+            className="btn-secondary w-full disabled:opacity-50"
+          >
+            {watchingAd ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading ad...
+              </>
+            ) : (
+              <>
+                <PlayCircle className="w-4 h-4" />
+                Watch Ad for +25 Stardust
               </>
             )}
           </button>
