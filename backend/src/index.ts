@@ -32,6 +32,18 @@ import { APP_NAME, DEFAULT_LANGUAGE } from "./config.js";
 const app = express();
 const server = createServer(app);
 const PORT = Number(process.env.PORT) || 3001;
+
+// Request logging + crash guards so deploy stream shows the failure point
+app.use((req, _res, next) => {
+  console.log(`[req] ${req.method} ${req.originalUrl}`);
+  next();
+});
+process.on("uncaughtException", (err) => {
+  console.error("[FATAL] uncaughtException:", err);
+});
+process.on("unhandledRejection", (reason) => {
+  console.error("[FATAL] unhandledRejection:", reason);
+});
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const isDev = process.env.NODE_ENV !== "production";
 
