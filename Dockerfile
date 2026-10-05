@@ -26,7 +26,10 @@ COPY backend/package.json backend/package-lock.json ./
 RUN npm ci --omit=dev --legacy-peer-deps
 COPY --from=backend-build /app/backend/node_modules/.prisma ./node_modules/.prisma
 COPY --from=backend-build /app/backend/dist ./dist
+COPY backend/db-init.mjs ./db-init.mjs
+COPY supabase-schema.sql /app/db/schema.sql
+COPY supabase-seed.sql /app/db/seed.sql
 COPY --from=frontend-build /app/frontend/dist /app/static
 ENV STATIC_DIR=/app/static
 EXPOSE 8080
-CMD ["node", "dist/index.js"]
+CMD ["sh", "-c", "node db-init.mjs && node dist/index.js"]
