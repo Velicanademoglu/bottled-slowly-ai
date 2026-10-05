@@ -22,6 +22,7 @@ export const supabase =
 // Resolve DB URL from whichever secret the host injects
 const dbUrl =
   process.env.DATABASE_URL ||
+  process.env.APP_DATABASE_URL ||
   process.env.SUPABASE_DATABASE_URL ||
   process.env.POSTGRES_URL ||
   process.env.POSTGRESQL_URL ||

@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { canAccessAdmin } from "./lib/roles.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default-secret-change-me";
+const JWT_SECRET =
+  process.env.APP_JWT_SECRET || process.env.JWT_SECRET || "default-secret-change-me";
 
 export interface AuthRequest extends Request {
   userId?: number;
