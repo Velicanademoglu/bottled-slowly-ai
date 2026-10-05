@@ -121,7 +121,7 @@ export default function OnboardingPage() {
       case 0:
         return (
           <div className="space-y-4">
-            <label className="block text-sm text-gray-400">{t("onboarding.birthDate")}</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400">{t("onboarding.birthDate")}</label>
             <input
               type="date"
               className="input-field"
@@ -134,13 +134,13 @@ export default function OnboardingPage() {
       case 1:
         return (
           <div className="space-y-3">
-            <p className="text-sm text-gray-400 mb-2">{t("onboarding.gender")}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t("onboarding.gender")}</p>
             {GENDERS.map((g) => (
               <button
                 key={g}
                 onClick={() => setProfile({ ...profile, gender: g })}
                 className={`w-full text-left px-4 py-3 rounded-2xl border transition ${
-                  profile.gender === g ? "border-star-400 bg-star-400/10 text-white" : "border-white/10 text-gray-300 hover:bg-white/5"
+                  profile.gender === g ? "border-star-500 bg-star-100 text-amber-950 dark:border-star-400 dark:bg-star-400 dark:text-space-950" : "border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
                 }`}
               >
                 {g}
@@ -151,13 +151,13 @@ export default function OnboardingPage() {
       case 2:
         return (
           <div className="space-y-3">
-            <p className="text-sm text-gray-400 mb-2">{t("onboarding.preferredGender")}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t("onboarding.preferredGender")}</p>
             {PREFERRED_GENDERS.map((g) => (
               <button
                 key={g}
                 onClick={() => setPreferences({ ...preferences, preferredGender: g })}
                 className={`w-full text-left px-4 py-3 rounded-2xl border transition ${
-                  preferences.preferredGender === g ? "border-star-400 bg-star-400/10 text-white" : "border-white/10 text-gray-300 hover:bg-white/5"
+                  preferences.preferredGender === g ? "border-star-500 bg-star-100 text-amber-950 dark:border-star-400 dark:bg-star-400 dark:text-space-950" : "border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
                 }`}
               >
                 {g}
@@ -169,7 +169,7 @@ export default function OnboardingPage() {
         return (
           <div className="space-y-6">
             <div>
-              <label className="block text-sm text-gray-400 mb-2">{t("onboarding.country")}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">{t("onboarding.country")}</label>
               <SearchableSelect
                 options={COUNTRY_OPTIONS}
                 value={profile.country}
@@ -179,7 +179,7 @@ export default function OnboardingPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-2">{t("onboarding.ageRange")}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">{t("onboarding.ageRange")}</label>
               <div className="flex items-center gap-4">
                 <input
                   type="number"
@@ -205,7 +205,7 @@ export default function OnboardingPage() {
       case 4:
         return (
           <div className="space-y-4">
-            <p className="text-sm text-gray-400 mb-2">{t("onboarding.languages")}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t("onboarding.languages")}</p>
             <SearchableSelect
               options={LANGUAGE_OPTIONS}
               value=""
@@ -215,11 +215,11 @@ export default function OnboardingPage() {
             />
             <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
               {languages.map((lang) => (
-                <div key={lang.language} className="flex items-center justify-between p-3 rounded-2xl bg-white/5">
-                  <span className="text-gray-200">{lang.language}</span>
+                <div key={lang.language} className="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50 p-3 dark:border-transparent dark:bg-white/5">
+                  <span className="text-gray-800 dark:text-gray-200">{lang.language}</span>
                   <div className="flex items-center gap-2">
                     <select
-                      className="bg-space-800 border border-white/10 rounded-xl px-3 py-1.5 text-sm text-white"
+                      className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-800 dark:border-white/10 dark:bg-space-800 dark:text-white"
                       value={lang.level}
                       onChange={(e) => updateLanguageLevel(lang.language, e.target.value)}
                     >
@@ -243,7 +243,7 @@ export default function OnboardingPage() {
       case 5:
         return (
           <div className="space-y-4">
-            <p className="text-sm text-gray-400 mb-2">{t("onboarding.interests")}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t("onboarding.interests")}</p>
             <div className="flex flex-wrap gap-2">
               {INTERESTS.map((i) => (
                 <button
@@ -251,7 +251,7 @@ export default function OnboardingPage() {
                   onClick={() => toggle(i, interests, setInterests)}
                   className={`px-4 py-2 rounded-full text-sm border transition ${
                     interests.includes(i)
-                      ? "border-star-400 bg-star-400/10 text-white"
+                      ? "border-star-500 bg-star-100 text-amber-950 dark:border-star-400 dark:bg-star-400 dark:text-space-950"
                       : "border-white/10 text-gray-400 hover:bg-white/5"
                   }`}
                 >
@@ -264,7 +264,7 @@ export default function OnboardingPage() {
       case 6:
         return (
           <div className="space-y-4">
-            <p className="text-sm text-gray-400 mb-2">{t("onboarding.conversationGoals")}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t("onboarding.conversationGoals")}</p>
             <div className="flex flex-wrap gap-2">
               {GOALS.map((g) => (
                 <button
@@ -272,7 +272,7 @@ export default function OnboardingPage() {
                   onClick={() => toggle(g, goals, setGoals)}
                   className={`px-4 py-2 rounded-full text-sm border transition ${
                     goals.includes(g)
-                      ? "border-star-400 bg-star-400/10 text-white"
+                      ? "border-star-500 bg-star-100 text-amber-950 dark:border-star-400 dark:bg-star-400 dark:text-space-950"
                       : "border-white/10 text-gray-400 hover:bg-white/5"
                   }`}
                 >
@@ -285,7 +285,7 @@ export default function OnboardingPage() {
       case 7:
         return (
           <div className="space-y-4">
-            <label className="block text-sm text-gray-400">{t("onboarding.bio")}</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400">{t("onboarding.bio")}</label>
             <textarea
               className="input-field resize-none"
               rows={4}
@@ -307,11 +307,11 @@ export default function OnboardingPage() {
       <div className="w-full max-w-lg animate-slide-up">
         <div className="card p-8">
           <div className="mb-6">
-            <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
+            <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
               <span>Step {step + 1} of {totalSteps}</span>
               <span>{Math.round(((step + 1) / totalSteps) * 100)}%</span>
             </div>
-            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-1.5 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
               <div
                 className="h-full bg-gradient-to-r from-star-400 to-nebula-500 transition-all"
                 style={{ width: `${((step + 1) / totalSteps) * 100}%` }}

@@ -48,8 +48,8 @@ export default function CreateMessagePage() {
       <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center px-4 py-12 text-center pb-24">
         <div className="max-w-md animate-slide-up">
           <div className="text-6xl mb-6 animate-float">🚀</div>
-          <h2 className="text-2xl font-bold text-white mb-3">Your message is now traveling through the universe.</h2>
-          <p className="text-gray-400 mb-8">You will be notified when someone discovers it.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Your message is now traveling through the universe.</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">You will be notified when someone discovers it.</p>
           <button
             onClick={() => navigate(castJourneyId ? `/discoveries?tab=traveling` : `/discoveries?tab=traveling`)}
             className="btn-primary"
@@ -69,8 +69,8 @@ export default function CreateMessagePage() {
         </button>
 
         <div className="card p-6 sm:p-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Create a message</h1>
-          <p className="text-gray-400 mb-6">Write something meaningful and cast it into space.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Create a message</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">Write something meaningful and cast it into space.</p>
 
           {error && <Alert type="error" className="mb-5">{error}</Alert>}
 
@@ -88,7 +88,7 @@ export default function CreateMessagePage() {
             </div>
 
             <div>
-              <p className="text-sm text-gray-400 mb-3">Choose a vessel</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Choose a vessel</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {VESSELS.map((v) => (
                   <button
@@ -98,10 +98,10 @@ export default function CreateMessagePage() {
                     onClick={() => setVessel(v.id)}
                     className={`px-4 py-3 rounded-2xl border text-sm font-medium transition ${
                       vessel === v.id
-                        ? "border-star-400 bg-star-400/10 text-white"
+                        ? "border-amber-400 bg-amber-50 text-amber-950 dark:border-star-400 dark:bg-star-400 dark:text-space-950"
                         : v.locked
-                        ? "border-white/5 text-gray-600 cursor-not-allowed"
-                        : "border-white/10 text-gray-300 hover:bg-white/5"
+                        ? "border-gray-200 text-gray-400 cursor-not-allowed dark:border-white/5 dark:text-gray-600"
+                        : "border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
                     }`}
                   >
                     {v.name}

@@ -12,9 +12,10 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "dark";
-  const stored = localStorage.getItem("theme") as Theme | null;
-  if (stored === "light" || stored === "dark") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  const stored = localStorage.getItem("projectstar-theme-v2") as Theme | null;
+  const theme = stored === "light" || stored === "dark" ? stored : "dark";
+  document.documentElement.classList.toggle("dark", theme === "dark");
+  return theme;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -27,7 +28,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("theme", theme);
+    localStorage.setItem("projectstar-theme-v2", theme);
   }, [theme]);
 
   const setTheme = (value: Theme) => setThemeState(value);

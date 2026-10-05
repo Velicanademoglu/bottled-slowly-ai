@@ -59,8 +59,8 @@ export default function RegisterPage() {
               <Sparkles className="w-6 h-6 text-star-400" />
               <span className="text-xl font-bold text-gradient">{name}</span>
             </div>
-            <h2 className="text-3xl font-bold text-white mb-2">{t("auth.register")}</h2>
-            <p className="text-gray-400">{t("slogan")}</p>
+            <h2 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">{t("auth.register")}</h2>
+            <p className="text-gray-600 dark:text-gray-400">{t("slogan")}</p>
           </div>
 
           {error && <Alert type="error" className="mb-5">{error}</Alert>}
@@ -107,7 +107,7 @@ export default function RegisterPage() {
               <span>{t("auth.passwordHint")}</span>
             </div>
 
-            <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
+            <label className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
               <input
                 type="checkbox"
                 checked={adultConfirmed}
@@ -117,7 +117,7 @@ export default function RegisterPage() {
               <span>{t("auth.adultConfirm")}</span>
             </label>
 
-            <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
+            <label className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
               <input
                 type="checkbox"
                 checked={tosAccepted}
@@ -126,11 +126,11 @@ export default function RegisterPage() {
               />
               <span>
                 {t("auth.tosAcceptPrefix")}{" "}
-                <Link to="/terms" className="text-star-400 hover:text-star-300 underline" target="_blank">
+                <Link to="/terms" className="text-amber-700 hover:text-amber-800 dark:text-star-400 dark:hover:text-star-300 underline" target="_blank">
                   {t("auth.termsLink")}
                 </Link>{" "}
                 {t("auth.tosAcceptAnd")}{" "}
-                <Link to="/privacy" className="text-star-400 hover:text-star-300 underline" target="_blank">
+                <Link to="/privacy" className="text-amber-700 hover:text-amber-800 dark:text-star-400 dark:hover:text-star-300 underline" target="_blank">
                   {t("auth.privacyLink")}
                 </Link>
                 {t("auth.tosAcceptSuffix")}
@@ -152,9 +152,9 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-400">
+          <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
             {t("auth.hasAccount")}{" "}
-            <Link to="/login" className="font-semibold text-star-400 hover:text-star-300">
+            <Link to="/login" className="font-semibold text-amber-700 hover:text-amber-800 dark:text-star-400 dark:hover:text-star-300">
               {t("auth.login")}
             </Link>
           </p>

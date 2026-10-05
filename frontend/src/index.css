@@ -3,16 +3,20 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: "Aptos", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  line-height: 1.55;
   font-weight: 400;
   color: #111827;
   background-color: #f8fafc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .dark {
-  color: #f9fafb;
-  background-color: #030712;
+  color: #eef2ff;
+  background-color: #080d18;
 }
 
 body {
@@ -32,7 +36,10 @@ body {
     background: radial-gradient(ellipse at top, #e0e7ff 0%, #f1f5f9 40%, #f8fafc 100%);
   }
   .dark .bg-space-gradient {
-    background: radial-gradient(ellipse at top, #1e1b4b 0%, #0f172a 40%, #030712 100%);
+    background:
+      radial-gradient(ellipse at 18% 0%, rgba(91, 82, 155, 0.26) 0%, transparent 38%),
+      radial-gradient(ellipse at 88% 18%, rgba(32, 112, 142, 0.14) 0%, transparent 34%),
+      linear-gradient(155deg, #111827 0%, #0a1020 52%, #080d18 100%);
   }
   .bg-glass {
     background: rgba(255, 255, 255, 0.8);
