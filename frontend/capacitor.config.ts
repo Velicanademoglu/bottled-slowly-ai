@@ -9,6 +9,11 @@ const config: CapacitorConfig = {
     iosScheme: 'capacitor',
   },
   plugins: {
+    // Route WebView HTTP through the native stack - bypasses CORS/preflight
+    // (hosting edge answers OPTIONS without CORS headers, which blocked native app requests)
+    CapacitorHttp: {
+      enabled: true,
+    },
     SplashScreen: {
       launchShowDuration: 2500,
       launchAutoHide: true,

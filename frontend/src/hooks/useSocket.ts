@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { Capacitor } from "@capacitor/core";
 import { getAuthToken, API_BASE_URL } from "../lib/api";
 
 export function useSocket() {
@@ -12,7 +13,8 @@ export function useSocket() {
 
     const socket = io(import.meta.env.DEV ? window.location.origin : API_BASE_URL, {
       auth: { token },
-      transports: ["websocket", "polling"],
+      // WebSockets aren't subject to CORS preflight - prefer them on native
+      transports: Capacitor.isNativePlatform() ? ["websocket"] : ["websocket", "polling"],
     });
 
     socketRef.current = socket;

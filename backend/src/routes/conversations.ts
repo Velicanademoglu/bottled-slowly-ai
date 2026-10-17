@@ -4,6 +4,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { prisma } from "../db.js";
+import { saveDataUrl } from "../services/uploads.js";
 import { appSocket } from "../socket.js";
 import type { AuthRequest } from "../auth.js";
 
@@ -128,6 +129,7 @@ router.post("/:id/messages", upload.single("media"), async (req: AuthRequest, re
   }
 
   const file = req.file;
+  const dataUrl = typeof req.body?.mediaDataUrl === "string" ? req.body.mediaDataUrl : "";
   let content = "";
   let type = "text";
   let mediaUrl: string | null = null;
@@ -136,6 +138,18 @@ router.post("/:id/messages", upload.single("media"), async (req: AuthRequest, re
     type = detectType(file.mimetype);
     mediaUrl = `/uploads/chat/${file.filename}`;
     content = req.body?.content ? String(req.body.content).trim() : "";
+  } else if (dataUrl) {
+    // Native app uploads send base64 data URLs (CapacitorHttp bypasses multipart)
+    try {
+      const mimeMatch = /^data:([a-zA-Z0-9/+.-]+);base64,/.exec(dataUrl);
+      const filename = saveDataUrl(dataUrl, { dir: chatUploadDir, maxBytes: CHAT_MAX_SIZE, allowedMimes: ALLOWED_MIMES });
+      type = detectType(mimeMatch ? mimeMatch[1] : "application/octet-stream");
+      mediaUrl = `/uploads/chat/${filename}`;
+      content = req.body?.content ? String(req.body.content).trim() : "";
+    } catch (e) {
+      res.status(400).json({ error: e instanceof Error ? e.message : "Invalid media" });
+      return;
+    }
   } else {
     const parsed = sendSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -145,7 +159,7 @@ router.post("/:id/messages", upload.single("media"), async (req: AuthRequest, re
     content = parsed.data.content;
   }
 
-  if (!content && !file) {
+  if (!content && !mediaUrl) {
     res.status(400).json({ error: "Message cannot be empty" });
     return;
   }

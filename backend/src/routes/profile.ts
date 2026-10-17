@@ -3,6 +3,7 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import { prisma } from "../db.js";
+import { saveDataUrl } from "../services/uploads.js";
 import type { AuthRequest } from "../auth.js";
 
 const router = Router();
@@ -197,13 +198,27 @@ router.put("/me", async (req: AuthRequest, res) => {
 router.post("/avatar", upload.single("avatar"), async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const file = req.file;
-  if (!file) {
+  const dataUrl = typeof req.body?.dataUrl === "string" ? req.body.dataUrl : "";
+
+  if (!file && !dataUrl) {
     res.status(400).json({ error: "No image uploaded" });
     return;
   }
 
   try {
-    const avatarUrl = `/uploads/avatars/${file.filename}`;
+    let filename: string;
+    if (file) {
+      filename = file.filename;
+    } else {
+      // Native app uploads send base64 data URLs (CapacitorHttp bypasses multipart)
+      try {
+        filename = saveDataUrl(dataUrl, { dir: uploadDir, maxBytes: AVATAR_MAX_SIZE, allowedMimes: ALLOWED_MIMES });
+      } catch (e) {
+        res.status(400).json({ error: e instanceof Error ? e.message : "Invalid image" });
+        return;
+      }
+    }
+    const avatarUrl = `/uploads/avatars/${filename}`;
     await prisma.profile.upsert({
       where: { userId },
       create: { userId, avatarUrl },

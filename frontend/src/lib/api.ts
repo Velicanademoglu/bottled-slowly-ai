@@ -60,6 +60,16 @@ export const authApi = {
     api.post<{ ok: boolean }>("/api/auth/resend-verification", { email }),
 };
 
+// On native, CapacitorHttp doesn't support multipart - send base64 data URLs instead.
+async function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+}
+
 export const profileApi = {
   me: () => api.get<User>("/api/profile/me"),
   update: (profile: Partial<Profile>) => api.put<Profile>("/api/profile/me", profile),
@@ -73,7 +83,11 @@ export const profileApi = {
     api.post<{ ok: boolean }>("/api/profile/interests", { interest }),
   removeInterest: (interest: string) =>
     api.delete<{ ok: boolean }>(`/api/profile/interests/${encodeURIComponent(interest)}`),
-  uploadAvatar: (file: File) => {
+  uploadAvatar: async (file: File) => {
+    if (Capacitor.isNativePlatform()) {
+      const dataUrl = await fileToDataUrl(file);
+      return api.post<{ avatarUrl: string }>("/api/profile/avatar", { dataUrl });
+    }
     const formData = new FormData();
     formData.append("avatar", file);
     return api.post<{ avatarUrl: string }>("/api/profile/avatar", formData, {
@@ -132,8 +146,15 @@ export const conversationsApi = {
     api.get<{ conversations: unknown[] }>("/api/conversations"),
   get: (id: number) =>
     api.get<unknown>(`/api/conversations/${id}`),
-  send: (id: number, content: string, file?: File) => {
+  send: async (id: number, content: string, file?: File) => {
     if (file) {
+      if (Capacitor.isNativePlatform()) {
+        const mediaDataUrl = await fileToDataUrl(file);
+        return api.post<ChatMessage>(`/api/conversations/${id}/messages`, {
+          content: content.trim(),
+          mediaDataUrl,
+        });
+      }
       const formData = new FormData();
       formData.append("media", file);
       if (content.trim()) formData.append("content", content.trim());
