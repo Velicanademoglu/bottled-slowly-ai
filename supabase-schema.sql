@@ -352,6 +352,8 @@ CREATE TABLE "UserPremium" (
     "active" BOOLEAN NOT NULL DEFAULT true,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "productId" TEXT,
+    "voiceUntil" TIMESTAMP(3),
+    "videoUntil" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

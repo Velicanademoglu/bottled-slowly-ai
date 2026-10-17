@@ -29,6 +29,14 @@ async function tableExists(name) {
   return res.rowCount > 0;
 }
 
+// Idempotent schema upgrades applied on every boot (safe re-runs).
+// Keep in sync with prisma/migrations.
+const SCHEMA_UPGRADES = [
+  // 20261017220000_call_tiers: tiered call subscriptions ($5 voice / $15 video monthly)
+  `ALTER TABLE "UserPremium" ADD COLUMN IF NOT EXISTS "voiceUntil" TIMESTAMP(3)`,
+  `ALTER TABLE "UserPremium" ADD COLUMN IF NOT EXISTS "videoUntil" TIMESTAMP(3)`,
+];
+
 async function main() {
   await client.connect();
   console.log("[db-init] connected");
@@ -41,6 +49,11 @@ async function main() {
   } else {
     console.log("[db-init] schema already present");
   }
+
+  for (const sql of SCHEMA_UPGRADES) {
+    await client.query(sql);
+  }
+  console.log(`[db-init] schema upgrades applied (${SCHEMA_UPGRADES.length})`);
 
   const count = await client.query("SELECT COUNT(*)::int AS n FROM \"User\"");
   if (count.rows[0].n === 0) {
