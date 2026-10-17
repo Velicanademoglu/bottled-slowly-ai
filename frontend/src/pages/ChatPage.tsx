@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { io, Socket } from "socket.io-client";
-import { conversationsApi, reportsApi, aiApi } from "../lib/api";
+import { conversationsApi, reportsApi, aiApi, stardustApi } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
 import Alert from "../components/Alert";
 import Avatar from "../components/Avatar";
@@ -19,6 +19,10 @@ import {
   Play,
   Pause,
   Image as ImageIcon,
+  Gift,
+  Smile,
+  Phone,
+  Video,
 } from "lucide-react";
 
 function getSocketUrl(): string {
@@ -39,6 +43,23 @@ interface Conversation {
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
+const EMOJIS = [
+  "😀", "😂", "😍", "🥰", "😎", "🤔", "😢", "😮", "👍", "👏",
+  "🙏", "💪", "🔥", "✨", "🌊", "🍾", "⚓", "🏝️", "🐚", "🦜",
+  "🧭", "💎", "🎁", "❤️", "💙", "🌅", "🐠", "🦀", "⛵", "🗺️",
+];
+
+const GIFS = [
+  { key: "wave", emoji: "🌊", label: "Wave" },
+  { key: "party", emoji: "🎉", label: "Party" },
+  { key: "love", emoji: "💘", label: "Love" },
+  { key: "dance", emoji: "🕺", label: "Dance" },
+  { key: "sunset", emoji: "🌅", label: "Sunset" },
+  { key: "island", emoji: "🏝️", label: "Island" },
+];
+
+type AttachKind = "photo_message" | "video_message" | "voice_message";
+
 export default function ChatPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -56,9 +77,13 @@ export default function ChatPage() {
   const [generatingStarter, setGeneratingStarter] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
+  const [premiumAction, setPremiumAction] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const attachKindRef = useRef<AttachKind>("photo_message");
 
   const other = conversation?.members.find((m) => m.userId !== user?.id)?.user;
 
@@ -113,6 +138,75 @@ export default function ChatPage() {
       socket.disconnect();
     };
   }, [conversationId]);
+
+  const spendFor = async (feature: string): Promise<boolean> => {
+    try {
+      await stardustApi.spend(feature, other?.id);
+      return true;
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { error?: string } } };
+      if (axiosErr.response?.status === 402) {
+        setError(t("premium.insufficient"));
+      } else {
+        setError(axiosErr.response?.data?.error || t("common.error"));
+      }
+      return false;
+    }
+  };
+
+  const handleAttach = async (kind: AttachKind) => {
+    setError("");
+    setPremiumAction(kind);
+    const ok = await spendFor(kind);
+    setPremiumAction(null);
+    if (!ok) return;
+    attachKindRef.current = kind;
+    if (fileInputRef.current) {
+      fileInputRef.current.accept =
+        kind === "photo_message" ? "image/*" : kind === "video_message" ? "video/*" : "audio/*";
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleCall = async (kind: "voice_call" | "video_call") => {
+    setError("");
+    setPremiumAction(kind);
+    const ok = await spendFor(kind);
+    setPremiumAction(null);
+    if (ok) {
+      alert(t("premium.soon"));
+    }
+  };
+
+  const sendGift = async () => {
+    setError("");
+    setPremiumAction("gift_message");
+    const ok = await spendFor("gift_message");
+    setPremiumAction(null);
+    if (!ok) return;
+    try {
+      const { data } = await conversationsApi.send(conversationId, "🎁 " + t("premium.gift"), undefined);
+      setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]));
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      setError(axiosErr.response?.data?.error || t("common.error"));
+    }
+  };
+
+  const insertEmoji = (emoji: string) => {
+    setInput((prev) => prev + emoji);
+  };
+
+  const sendGif = async (gif: (typeof GIFS)[number]) => {
+    setShowGifPicker(false);
+    try {
+      const { data } = await conversationsApi.send(conversationId, `[GIF: ${gif.label}] ${gif.emoji}`, undefined);
+      setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]));
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      setError(axiosErr.response?.data?.error || t("common.error"));
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -213,7 +307,23 @@ export default function ChatPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={suggestStarter} disabled={generatingStarter} className="p-2 hover:bg-white/5 rounded-full text-star-400" title="AI starter">
+          <button
+            onClick={() => handleCall("voice_call")}
+            disabled={premiumAction !== null}
+            className="p-2 hover:bg-white/5 rounded-full text-sea-500 dark:text-sea-400"
+            title={`${t("premium.voiceCall")} · 30 ${t("space.stardust")}`}
+          >
+            <Phone className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => handleCall("video_call")}
+            disabled={premiumAction !== null}
+            className="p-2 hover:bg-white/5 rounded-full text-sea-500 dark:text-sea-400"
+            title={`${t("premium.videoCall")} · 50 ${t("space.stardust")}`}
+          >
+            <Video className="w-5 h-5" />
+          </button>
+          <button onClick={suggestStarter} disabled={generatingStarter} className="p-2 hover:bg-white/5 rounded-full text-sand-500 dark:text-sand-400" title="AI starter">
             {generatingStarter ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
           </button>
           <button onClick={report} className="p-2 hover:bg-white/5 rounded-full text-gray-400" title="Report">
@@ -272,19 +382,45 @@ export default function ChatPage() {
               </button>
             </div>
           )}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => handleAttach("photo_message")}
+              disabled={premiumAction !== null}
               className="p-2 text-gray-400 hover:bg-white/5 rounded-full"
-              title="Attach photo, video or voice"
+              title={`${t("premium.photo")} · 5 ${t("space.stardust")}`}
             >
-              <Paperclip className="w-5 h-5" />
+              {premiumAction === "photo_message" ? <Loader2 className="w-5 h-5 animate-spin" /> : <ImageIcon className="w-5 h-5" />}
+            </button>
+            <button
+              type="button"
+              onClick={sendGift}
+              disabled={premiumAction !== null}
+              className="p-2 text-gray-400 hover:bg-white/5 rounded-full"
+              title={`${t("premium.gift")} · 15 ${t("space.stardust")}`}
+            >
+              {premiumAction === "gift_message" ? <Loader2 className="w-5 h-5 animate-spin" /> : <Gift className="w-5 h-5" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowGifPicker((v) => !v); setShowEmojiPicker(false); }}
+              className="px-2 py-1 text-xs font-bold text-gray-400 hover:bg-white/5 rounded-full"
+              title="GIF"
+            >
+              GIF
+            </button>
+            <button
+              type="button"
+              onClick={() => { setShowEmojiPicker((v) => !v); setShowGifPicker(false); }}
+              className="p-2 text-gray-400 hover:bg-white/5 rounded-full"
+              title="Emoji"
+            >
+              <Smile className="w-5 h-5" />
             </button>
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*,video/*,audio/*"
+              accept="image/*"
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -292,8 +428,8 @@ export default function ChatPage() {
               type="text"
               value={input}
               onChange={(e) => handleTyping(e.target.value)}
-              placeholder={pendingFile ? "Add a caption..." : "Type a message..."}
-              className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none px-3"
+              placeholder={pendingFile ? "Add a caption..." : t("chat.placeholder", { defaultValue: "Mesajın..." })}
+              className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 outline-none px-2"
             />
             <button
               type="submit"
@@ -303,6 +439,37 @@ export default function ChatPage() {
               {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </button>
           </div>
+
+          {showEmojiPicker && (
+            <div className="grid grid-cols-6 gap-1 p-2 bg-black/5 dark:bg-white/5 rounded-xl">
+              {EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  onClick={() => insertEmoji(emoji)}
+                  className="text-2xl p-1.5 rounded-lg hover:bg-white/10 transition"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {showGifPicker && (
+            <div className="grid grid-cols-3 gap-2 p-2 bg-black/5 dark:bg-white/5 rounded-xl">
+              {GIFS.map((gif) => (
+                <button
+                  key={gif.key}
+                  type="button"
+                  onClick={() => sendGif(gif)}
+                  className="flex flex-col items-center gap-1 p-3 rounded-xl hover:bg-white/10 transition"
+                >
+                  <span className="text-3xl">{gif.emoji}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{gif.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </form>
     </div>

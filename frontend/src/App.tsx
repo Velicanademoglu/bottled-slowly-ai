@@ -20,6 +20,7 @@ import StorePage from "./pages/StorePage";
 import OnboardingPage from "./pages/OnboardingPage";
 import RevenueSimulationPage from "./pages/RevenueSimulationPage";
 import TemplatesPage from "./pages/TemplatesPage";
+import LootPage from "./pages/LootPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsPage from "./pages/TermsPage";
 import KVKKPage from "./pages/KVKKPage";
@@ -183,6 +184,14 @@ function App() {
           element={
             <ProtectedRoute>
               <TemplatesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/loot"
+          element={
+            <ProtectedRoute>
+              <LootPage />
             </ProtectedRoute>
           }
         />

@@ -9,6 +9,9 @@ export type StardustSource =
   | "ad_reward"
   | "iap"
   | "boost_purchase"
+  | "media_message"
+  | "gift_message"
+  | "premium_feature"
   | "admin_grant"
   | "other";
 

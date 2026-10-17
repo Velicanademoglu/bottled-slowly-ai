@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { stardustApi } from "../lib/api";
 import { showRewardedAd } from "../lib/ads";
-import { Sparkles, Star, Gift, CheckCircle2, Loader2, Clock, AlertCircle, PlayCircle } from "lucide-react";
+import { Sparkles, Star, CheckCircle2, Loader2, Clock, AlertCircle, PlayCircle } from "lucide-react";
 import Alert from "../components/Alert";
+import StreakCalendar from "../components/StreakCalendar";
 
 interface Mission {
   id: number;
@@ -143,66 +144,27 @@ export default function RewardsPage() {
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="card p-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-star-300 text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sand-500 dark:text-sand-300 text-sm font-medium mb-4">
             <Star className="w-4 h-4" />
             {balance.toLocaleString()} {t("space.stardust")}
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Rewards</h1>
-          <p className="text-gray-400">Collect Stardust daily and complete missions.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Rewards</h1>
+          <p className="text-gray-500 dark:text-gray-400">Collect Gold daily and complete missions.</p>
         </div>
 
         {error && <Alert type="error">{error}</Alert>}
         {message && <Alert type="success">{message}</Alert>}
 
-        <div className="card p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-star-500/10 text-star-400">
-                <Gift className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-white">Daily Reward</h2>
-                <p className="text-sm text-gray-400">Come back every day to build your streak.</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-star-300">{streak}</div>
-              <div className="text-xs text-gray-500">day streak</div>
-            </div>
-          </div>
-
-          <button
-            onClick={handleClaim}
-            disabled={claimedToday || claiming}
-            className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {claiming ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Claiming...
-              </>
-            ) : claimedToday ? (
-              <>
-                <CheckCircle2 className="w-4 h-4" />
-                Claimed today
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                Claim Daily Reward
-              </>
-            )}
-          </button>
-        </div>
+        <StreakCalendar streak={streak} claimedToday={claimedToday} claiming={claiming} onClaim={handleClaim} />
 
         <div className="card p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 rounded-lg bg-cosmic-500/10 text-cosmic-400">
+            <div className="p-2 rounded-lg bg-ocean-500/10 text-ocean-500 dark:text-ocean-400">
               <PlayCircle className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-semibold text-white">Watch & Earn</h2>
-              <p className="text-sm text-gray-400">Watch a short ad to earn +25 Stardust.</p>
+              <h2 className="font-semibold text-gray-900 dark:text-white">Watch & Earn</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Watch a short ad to earn +25 Gold.</p>
             </div>
           </div>
           <button
@@ -218,14 +180,14 @@ export default function RewardsPage() {
             ) : (
               <>
                 <PlayCircle className="w-4 h-4" />
-                Watch Ad for +25 Stardust
+                Watch Ad for +25 Gold
               </>
             )}
           </button>
         </div>
 
         <div className="card p-6">
-          <h2 className="font-semibold text-white mb-4">Daily Missions</h2>
+          <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Daily Missions</h2>
           <div className="space-y-3">
             {missions.length === 0 && (
               <p className="text-gray-500 text-sm">No active missions today.</p>

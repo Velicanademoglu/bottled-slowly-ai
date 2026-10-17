@@ -184,6 +184,9 @@ export const stardustApi = {
     api.post<{ ok: boolean; balance: number; reward: number }>(`/api/stardust/missions/${encodeURIComponent(key)}/complete`),
   claimAdReward: (rewardType: string) =>
     api.post<{ ok: boolean; balance: number; amount: number; rewardType: string }>("/api/stardust/ad-reward", { rewardType, adNetwork: "admob", adUnitId: "rewarded" }),
+  prices: () => api.get<{ prices: Record<string, number> }>("/api/stardust/prices"),
+  spend: (feature: string, targetUserId?: number) =>
+    api.post<{ ok: boolean; balance: number; spent: number; feature: string }>("/api/stardust/spend", { feature, targetUserId }),
 };
 
 export const adminApi = {

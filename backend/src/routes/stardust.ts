@@ -10,6 +10,7 @@ import {
   completeMission,
   rewardProfileCompletion,
   addTransaction,
+  type StardustSource,
 } from "../services/stardust.js";
 
 const AD_REWARD_TYPES = ["stardust", "boost", "extra_cast", "journey", "mystery"] as const;
@@ -139,6 +140,50 @@ router.post("/ad-reward", async (req: AuthRequest, res) => {
   adRewardClaims.set(userId, claims);
 
   res.json({ ok: true, balance: result.stardust.balance, amount, rewardType });
+});
+
+// Premium feature spending — server-side price table, balance-checked debit.
+const SPEND_FEATURES = ["photo_message", "video_message", "voice_message", "gift_message", "video_call", "voice_call"] as const;
+const SPEND_PRICES: Record<(typeof SPEND_FEATURES)[number], number> = {
+  photo_message: 5,
+  voice_message: 8,
+  video_message: 10,
+  gift_message: 15,
+  voice_call: 30,
+  video_call: 50,
+};
+
+const spendSchema = z.object({
+  feature: z.enum(SPEND_FEATURES),
+  targetUserId: z.number().int().positive().optional(),
+});
+
+router.get("/prices", (_req: AuthRequest, res) => {
+  res.json({ prices: SPEND_PRICES });
+});
+
+router.post("/spend", async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const parsed = spendSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten() });
+    return;
+  }
+
+  const { feature, targetUserId } = parsed.data;
+  const amount = SPEND_PRICES[feature];
+
+  const balance = await getBalance(userId);
+  if (balance < amount) {
+    res.status(402).json({ error: "INSUFFICIENT_BALANCE", balance, required: amount });
+    return;
+  }
+
+  const source: StardustSource =
+    feature === "gift_message" ? "gift_message" : feature.startsWith("photo") || feature.includes("message") ? "media_message" : "premium_feature";
+
+  const result = await addTransaction(userId, "debit", amount, source, { feature, targetUserId: targetUserId || null });
+  res.json({ ok: true, balance: result.stardust.balance, spent: amount, feature });
 });
 
 export default router;
