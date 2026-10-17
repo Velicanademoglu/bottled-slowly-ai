@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Capacitor } from "@capacitor/core";
 import type {
   AuthResponse,
   Profile,
@@ -13,9 +14,13 @@ import type {
   ChatMessage,
 } from "../types";
 
-export const API_BASE_URL = import.meta.env.DEV
-  ? ""
-  : import.meta.env.VITE_API_URL || "https://bottled-slowly-ai.onrender.com";
+// Web builds use same-origin (backend serves the frontend).
+// Native (APK/IPA) builds need the absolute live API URL.
+export const API_BASE_URL = Capacitor.isNativePlatform()
+  ? import.meta.env.VITE_API_URL || "https://bottled-slowly-ai-u1fl2k1.verdent.app"
+  : import.meta.env.DEV
+    ? ""
+    : import.meta.env.VITE_API_URL || "";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
