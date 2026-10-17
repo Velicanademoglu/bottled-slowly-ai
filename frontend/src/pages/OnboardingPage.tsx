@@ -95,8 +95,11 @@ export default function OnboardingPage() {
       if (user) login({ ...user, profile: p.data }, localStorage.getItem("token") || "");
       navigate("/space");
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { error?: string } } };
-      setError(axiosErr.response?.data?.error || t("common.error"));
+      const axiosErr = err as { response?: { data?: { error?: unknown; message?: string } } };
+      const raw = axiosErr.response?.data?.error;
+      // API may return structured zod errors (objects) - never render objects as children
+      const msg = axiosErr.response?.data?.message;
+      setError(typeof raw === "string" ? raw : typeof msg === "string" ? msg : t("common.error"));
     } finally {
       setSaving(false);
     }

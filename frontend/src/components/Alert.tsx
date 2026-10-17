@@ -20,11 +20,26 @@ const styles = {
   error: "border-red-200 bg-red-50 text-red-950 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-100",
 };
 
+// API errors can be structured objects (zod fieldErrors) - rendering those as
+// React children crashes the app, so normalize to a string.
+function normalizeChildren(children: React.ReactNode): React.ReactNode {
+  if (typeof children === "object" && children !== null && !Array.isArray(children)) {
+    const err = children as { error?: unknown; message?: string };
+    if (typeof err.message === "string") return err.message;
+    try {
+      return JSON.stringify(children);
+    } catch {
+      return "Error";
+    }
+  }
+  return children;
+}
+
 export default function Alert({ type = "info", children, className = "" }: Props) {
   return (
     <div className={`flex items-start gap-3 px-4 py-3 rounded-2xl border ${styles[type]} ${className}`}>
       {icons[type]}
-      <div className="text-sm leading-relaxed">{children}</div>
+      <div className="text-sm leading-relaxed">{normalizeChildren(children)}</div>
     </div>
   );
 }

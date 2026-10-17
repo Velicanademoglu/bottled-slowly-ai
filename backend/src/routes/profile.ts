@@ -29,8 +29,19 @@ const upload = multer({
   },
 });
 
+// Accepts "YYYY-MM-DD" (HTML date input) or full ISO datetime strings
+const birthDateInput = z.preprocess(
+  (v) => {
+    if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v.trim())) {
+      return v.trim() + "T00:00:00.000Z";
+    }
+    return v;
+  },
+  z.string().datetime().optional().or(z.literal(""))
+);
+
 const profileSchema = z.object({
-  birthDate: z.string().datetime().optional().or(z.literal("")),
+  birthDate: birthDateInput,
   gender: z.string().trim().min(1).max(30).optional(),
   country: z.string().trim().min(1).max(100).optional(),
   bio: z.string().trim().max(500).optional(),
