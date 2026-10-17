@@ -219,6 +219,23 @@ export const stardustApi = {
     api.post<{ ok: boolean; balance: number; spent: number; feature: string }>("/api/stardust/spend", { feature, targetUserId }),
 };
 
+export const iapApi = {
+  status: () =>
+    api.get<{
+      premium: boolean;
+      voice: boolean;
+      video: boolean;
+      premiumExpiresAt: string | null;
+      voiceExpiresAt: string | null;
+      videoExpiresAt: string | null;
+      prices: Record<string, number>;
+    }>("/api/iap/status"),
+  subscribeStardust: (tier: "voice" | "video" | "all") =>
+    api.post<{ ok: boolean; tier: string; expiresAt: string }>("/api/iap/subscribe-stardust", { tier }),
+  verify: (body: { productId: string; platform: "ios" | "android"; transactionId?: string }) =>
+    api.post<{ ok: boolean }>("/api/iap/verify", body),
+};
+
 export const adminApi = {
   login: (email: string, password: string) =>
     api.post<AdminAuthResponse>("/api/admin/auth/login", { email, password }),

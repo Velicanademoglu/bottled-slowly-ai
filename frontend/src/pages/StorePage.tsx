@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { PurchaseService } from "../native/purchase";
 import { stardustApi } from "../lib/api";
 import api from "../lib/api";
@@ -114,6 +115,24 @@ export default function StorePage() {
           <h1 className="text-2xl font-bold text-white mb-2">Store</h1>
           <p className="text-gray-400">Upgrade your journey through the universe.</p>
         </div>
+
+        <Link
+          to="/premium"
+          className="card p-4 flex items-center justify-between gap-4 border border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-transparent hover:from-amber-500/20 transition"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400">
+              <Crown className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white">{t("premium.pageTitle")}</h3>
+              <p className="text-sm text-gray-400">
+                {t("premium.voiceTierTitle")} $5 · {t("premium.videoTierTitle")} $15
+              </p>
+            </div>
+          </div>
+          <span className="text-amber-400 font-semibold text-sm">{t("premium.subscribe")} →</span>
+        </Link>
 
         {error && <Alert type="error">{error}</Alert>}
         {message && <Alert type="success">{message}</Alert>}

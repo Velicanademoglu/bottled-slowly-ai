@@ -235,8 +235,8 @@ export default function ProfilePage() {
           className="card p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/5 transition"
         >
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-sand-500/10 text-sand-600 dark:text-sand-400 text-lg">
-              ⚓
+            <div className="p-2.5 rounded-xl bg-star-500/10 text-star-600 dark:text-star-400 text-lg">
+              💎
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white">{t("loot.title")}</h3>

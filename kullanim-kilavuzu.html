@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bottled Slowly AI — Kullanım Kılavuzu</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(180deg, #030712 0%, #0B0F19 50%, #030712 100%);
+    color: #e5e7eb;
+    line-height: 1.7;
+    padding: 2rem 1rem;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  header { text-align: center; padding: 2.5rem 0 2rem; }
+  header h1 {
+    font-size: 2rem; font-weight: 800;
+    background: linear-gradient(135deg, #a78bfa, #60a5fa, #f0abfc);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header p { color: #9ca3af; margin-top: .5rem; }
+  .badge {
+    display: inline-block; margin-top: 1rem; padding: .3rem 1rem;
+    border: 1px solid rgba(167,139,250,.4); border-radius: 999px;
+    color: #c4b5fd; font-size: .8rem; background: rgba(167,139,250,.08);
+  }
+  nav {
+    background: rgba(17,24,39,.6); border: 1px solid rgba(255,255,255,.08);
+    border-radius: 1rem; padding: 1.25rem 1.5rem; margin: 1.5rem 0 2.5rem;
+  }
+  nav strong { color: #f9fafb; display: block; margin-bottom: .5rem; font-size: .9rem; }
+  nav a { color: #a5b4fc; text-decoration: none; font-size: .9rem; display: inline-block; margin: .2rem 1rem .2rem 0; }
+  nav a:hover { text-decoration: underline; }
+  section { margin-bottom: 2.5rem; }
+  h2 {
+    font-size: 1.3rem; color: #f9fafb; margin-bottom: 1rem;
+    padding-bottom: .5rem; border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  h2 .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.9rem; height: 1.9rem; border-radius: .6rem; margin-right: .6rem;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    font-size: .95rem; vertical-align: middle;
+  }
+  h3 { color: #e0e7ff; font-size: 1rem; margin: 1.2rem 0 .5rem; }
+  p { margin-bottom: .8rem; color: #d1d5db; }
+  ul, ol { margin: 0 0 .8rem 1.4rem; color: #d1d5db; }
+  li { margin-bottom: .35rem; }
+  b, strong { color: #f3f4f6; }
+  .tip, .warn {
+    border-radius: .75rem; padding: .9rem 1.1rem; font-size: .9rem; margin: 1rem 0;
+  }
+  .tip { background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.3); color: #a7f3d0; }
+  .warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.3); color: #fde68a; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }
+  th, td { border: 1px solid rgba(255,255,255,.1); padding: .6rem .8rem; text-align: left; }
+  th { background: rgba(255,255,255,.05); color: #f9fafb; }
+  td { color: #d1d5db; }
+  .price { color: #6ee7b7; font-weight: 700; white-space: nowrap; }
+  .free { color: #93c5fd; }
+  .step { display: flex; gap: .9rem; margin-bottom: .9rem; }
+  .step-n {
+    flex: 0 0 auto; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    background: rgba(124,58,237,.25); color: #c4b5fd; font-size: .8rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; margin-top: .2rem;
+  }
+  footer { text-align: center; color: #6b7280; font-size: .8rem; padding: 2rem 0 1rem; }
+  code { background: rgba(255,255,255,.08); padding: .1rem .4rem; border-radius: .3rem; font-size: .85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🌌 Bottled Slowly AI</h1>
+  <p>Kullanım Kılavuzu — Mesajının yıldızlar arasında yolculuğuna başla</p>
+  <span class="badge">Sürüm 1.1.4 · Web + Android</span>
+</header>
+
+<nav>
+  <strong>İçindekiler</strong>
+  <a href="#kayit">1. Kayıt & Giriş</a>
+  <a href="#onboarding">2. Profil Kurulumu</a>
+  <a href="#olustur">3. Mesaj Oluşturma</a>
+  <a href="#kesifler">4. Keşifler</a>
+  <a href="#sohbet">5. Sohbetler</a>
+  <a href="#oduller">6. Ödüller & Görevler</a>
+  <a href="#koleksiyon">7. Seri Takvimi & Koleksiyon</a>
+  <a href="#premium">8. Premium Aramalar</a>
+  <a href="#magaza">9. Mağaza & Yıldız Tozu</a>
+  <a href="#profil">10. Profil & Hesap</a>
+  <a href="#gizlilik">11. Güvenlik & Gizlilik</a>
+  <a href="#sss">12. Sık Sorulanlar</a>
+</nav>
+
+<section id="kayit">
+  <h2><span class="num">1</span>Kayıt ve Giriş</h2>
+  <div class="step"><span class="step-n">1</span><div>Uygulamayı aç ve <b>Kayıt Ol</b>'a dokun.</div></div>
+  <div class="step"><span class="step-n">2</span><div>E-posta adresini ve bir kullanıcı adı gir. Kullanıcı adın diğer kullanıcılara görünecek.</div></div>
+  <div class="step"><span class="step-n">3</span><div>Güçlü bir şifre belirle (en az 8 karakter, harf + rakam).</div></div>
+  <div class="step"><span class="step-n">4</span><div>Kullanım koşullarını ve <b>18+ yaş</b> beyanını onayla. Uygulama yetişkinlere yöneliktir.</div></div>
+  <div class="step"><span class="step-n">5</span><div>Giriş yaptıktan sonra doğrudan profil kurulumuna yönlendirilirsin.</div></div>
+  <div class="tip">💡 Şifreni unuttursan giriş ekranındaki <b>Şifremi Unuttum</b> bağlantısıyla e-postana sıfırlama bağlantısı gönderebilirsin.</div>
+</section>
+
+<section id="onboarding">
+  <h2><span class="num">2</span>Profil Kurulumu (Onboarding)</h2>
+  <p>İlk girişte birkaç hızlı adımda profilini tamamlarsın:</p>
+  <ul>
+    <li><b>Doğum tarihi, cinsiyet ve ülke</b> — seni uygun keşiflerle eşleştirmek için kullanılır.</li>
+    <li><b>Konuşma dilleri</b> — hangi dillerde yazışmak istediğini seç.</li>
+    <li><b>İlgi alanları</b> — müzik, seyahat, bilim kurgu... Bu başlıklar sohbet başlatıcılarda kullanılır.</li>
+    <li><b>AI kişiliği</b> — sohbetlerinde sana yardımcı olacak AI kişisini seç: <i>Samimi, Romantik, Komik, Derin, Şiirsel, Gizemli</i>.</li>
+  </ul>
+  <div class="tip">💡 Profilini tamamladığında <b>+50 Yıldız Tozu</b> hediye! Bakiyen ilk günden dolu başlar.</div>
+</section>
+
+<section id="olustur">
+  <h2><span class="num">3</span>Mesaj Oluşturma (Şişeni Gönder)</h2>
+  <p>Bottled Slowly'nin ruhu burada: yazdığın mesaj anında gitmez. <b>Şişeye koyulur ve evrende yolculuğa çıkar.</b></p>
+  <ol>
+    <li>Alt menüden <b>Oluştur</b>'a dokun.</li>
+    <li>Mesajını yaz — uzun ya da kısa, tamamen sana kalmış.</li>
+    <li>Bir <b>gemi (vessel)</b> seç: Parşömen, Kalp, Yıldız Mektubu... Ücretsiz gemiler her zaman hazır; premium gemiler mesajını daha özel gösterir.</li>
+    <li>Gönder! Mesajın rastgele bir yolcuyla buluşacak ya da evrende sürecek.</li>
+  </ol>
+  <h3>Ücretli ve ücretsiz özellikler</h3>
+  <table>
+    <tr><th>Özellik</th><th>Durum</th></tr>
+    <tr><td>📝 Metin mesajı</td><td class="free">Ücretsiz</td></tr>
+    <tr><td>📷 Fotoğraf gönderme</td><td class="free">Ücretsiz</td></tr>
+    <tr><td>🎁 Hediye gönderme</td><td class="free">Ücretsiz</td></tr>
+    <tr><td>😊 Emoji & GIF</td><td class="free">Ücretsiz</td></tr>
+    <tr><td>🎬 Video mesajı</td><td class="price">10 Yıldız Tozu</td></tr>
+    <tr><td>📞 Sesli arama</td><td class="price">Abonelik $5/ay</td></tr>
+    <tr><td>📹 Görüntülü arama</td><td class="price">Abonelik $15/ay</td></tr>
+  </table>
+  <div class="tip">💡 Mesajına <b>başlık (caption)</b> ekleyerek fotoğraf ve videolarını daha anlamlı kılabilirsin.</div>
+</section>
+
+<section id="kesifler">
+  <h2><span class="num">4</span>Keşifler</h2>
+  <p><b>Keşifler</b> sekmesinde evrende dolaşan şişeler seni bekler:</p>
+  <ul>
+    <li><b>Yolculukta olanlar</b> — Şu an evrende dolaşan, henüz kimseye ulaşmamış mesajlar.</li>
+    <li><b>Sana ulaşanlar</b> — Yabancıların sana gönderdiği mesajlar. Kabul edersen sohbet başlar; istemezsen mesaj yoluna devam eder.</li>
+    <li><b>Geçmiş</b> — Kabul ettiğin veya devam ettirdiğin tüm mesajların geçmişi.</li>
+  </ul>
+  <p><b>Ülke ve dil filtreleri</b>yle hem yurt içinden hem dünyanın dört yanından insanlarla eşleşebilirsin.</p>
+</section>
+
+<section id="sohbet">
+  <h2><span class="num">5</span>Sohbetler</h2>
+  <ul>
+    <li><b>Canlı mesajlaşma</b> — Mesajlar gerçek zamanlı iletilir (yazıyor... göstergesi dahil).</li>
+    <li><b>AI sohbet başlatıcı</b> ✨ — Havya'da yapay zekâ sana kişiliğe uygun açılış soruları ve yanıt önerileri üretir. (İnternet yoksa bile hazır öneriler çalışır.)</li>
+    <li><b>Şablonlar</b> — Sık kullandığın mesajları kaydet, tek dokunuşla gönder.</li>
+    <li><b>Rapor ve engelle</b> 🔒 — Uygunsuz davranışı tek dokunuşla rapor et; kullanıcıyı engelle.</li>
+  </ul>
+  <div class="warn">⚠️ Kişisel bilgilerini (adres, TC, banka bilgisi) paylaşma. Moderasasyon ekibimiz raporları hızla inceler.</div>
+</section>
+
+<section id="oduller">
+  <h2><span class="num">6</span>Ödüller ve Görevler</h2>
+  <p><b>Yıldız Tozu</b> uygulamanın para birimidir. Her gün kazanabilirsin:</p>
+  <ul>
+    <li><b>Günlük ödül</b> — Her gün uygulamaya gir, ödülünü topla. Seri (streak) yaptıkça ödül büyür!</li>
+    <li><b>Günlük görevler</b> — "Bugün 1 mesaj gönder", "3 keşif yap" gibi görevleri tamamla, Yıldız Tozu kazan.</li>
+    <li><b>Reklam izle-kazan</b> — Kısa reklam izleyerek ekstra Yıldız Tozu.</li>
+    <li><b>Profil tamamlama</b> — Profilini %100 tamamla, tek seferlik 50 Yıldız Tozu.</li>
+  </ul>
+</section>
+
+<section id="koleksiyon">
+  <h2><span class="num">7</span>Seri Takvimi ve Koleksiyon</h2>
+  <h3>🔥 Seri Takvimi</h3>
+  <p>Üst üste kaç gün uygulamaya girdiğini gösteren <b>20 günlük yıldız haritası</b>. Her gün bir hücre dolar; seri kesilirse hücreler sıfırlanır. Serinin büyüdükçe günlük ödülün artar.</p>
+  <h3>💎 Koleksiyon (Ganimetler)</h3>
+  <p>Günlük serilerinle <b>12 özel uzay eşyası</b> kazanabilirsin — Yıldız Parçası'ndan Sonsuzluk'a. Eşya açma anı sürprizle dolu: her biri farklı nadirlikte (sıradan → efsanevi). Koleksiyonunda tüm eşyaları görüntüle, eksik olanları takip et.</p>
+</section>
+
+<section id="premium">
+  <h2><span class="num">8</span>Premium Aramalar (Abonelik)</h2>
+  <p>Sohbet ekranındaki telefon / kamera simgeleriyle arama başlatırsın. Aramalar abonelikle açılır:</p>
+  <table>
+    <tr><th>Paket</th><th>Fiyat</th><th>Yıldız Tozu karşılığı</th></tr>
+    <tr><td>📞 Sesli Arama</td><td class="price">$5 / ay</td><td>300 Yıldız Tozu</td></tr>
+    <tr><td>📹 Görüntülü Arama</td><td class="price">$15 / ay</td><td>900 Yıldız Tozu</td></tr>
+    <tr><td>👑 Tam Premium</td><td class="price">$25 / ay</td><td>1200 Yıldız Tozu</td></tr>
+  </table>
+  <h3>Nasıl abone olunur?</h3>
+  <ol>
+    <li>Mağaza'daki <b>Premium Aramalar</b> kartına dokun (veya sohbette arama simgesine bas).</li>
+    <li>İstediğin paketi seç ve <b>Abone ol</b>'a dokun — Yıldız Tozu bakiyenden düşülür.</li>
+    <li>Aboneliğin anında aktifleşir, 30 gün boyunca sınırsız arama yaparsın.</li>
+  </ol>
+  <div class="tip">💡 Yıldız Tozun yetmezse Mağaza'dan kartla Yıldız Tozu paketi alabilir veya günlük ödüllerle biriktirebilirsin. Görüntülü arama paketi sesli aramaları da kapsar.</div>
+  <p><b>Arama ekranı:</b> Kamera/mikrofon önizlemesi, susturma, kamera kapatma ve bitir düğmeleri. Arama sırasında süre sayacı görünür.</p>
+</section>
+
+<section id="magaza">
+  <h2><span class="num">9</span>Mağaza ve Yıldız Tozu Paketleri</h2>
+  <p>Mağaza'dan kartla Yıldız Tozu satın alabilirsin:</p>
+  <ul>
+    <li><b>100 Yıldız Tozu</b> — başlangıç paketi</li>
+    <li><b>500 Yıldız Tozu</b> — popüler seçim</li>
+    <li><b>1200 Yıldız Tozu</b> — en avantajlı</li>
+    <li><b>3000 Yıldız Tozu</b> — mega paket</li>
+  </ul>
+  <p>Ayrıca <b>boost</b> paketleriyle mesajının evrende daha fazla yolcuyla buluşmasını sağlayabilirsin.</p>
+</section>
+
+<section id="profil">
+  <h2><span class="num">10</span>Profil ve Hesap</h2>
+  <ul>
+    <li><b>Avatar</b> — Fotoğraf yükle veya hazır uzay avatarlarından seç.</li>
+    <li><b>Profil bilgileri</b> — Bio, ilgi alanları, dilleri her zaman güncelleyebilirsin.</li>
+    <li><b>Tema</b> — Açık / koyu mod desteği (uzay paleti her ikisinde de muhteşem).</li>
+    <li><b>Dil</b> — Uygulama Türkçe ve İngilizce çalışır; otomatik algılanır, profilden değiştirebilirsin.</li>
+    <li><b>PWA</b> — Web sürümünü telefonuna <b>Ana ekrana ekle</b> ile kurabilirsin; APK gibi çalışır.</li>
+  </ul>
+</section>
+
+<section id="gizlilik">
+  <h2><span class="num">11</span>Güvenlik ve Gizlilik</h2>
+  <ul>
+    <li>Şifreleriniz <b>kriptolanmış</b> saklanır; oturumlar JWT ile korunur.</li>
+    <li><b>KVKK / GDPR</b>: "Verilerimi indir" ile tüm verini JSON olarak alabilir, hesabını kalıcı olarak silebilirsin.</li>
+    <li>Tüm <b>raporlar</b> yönetici paneline düşer ve hızla incelenir.</li>
+    <li>Engellediğin kullanıcılar seni bir daha bulamaz.</li>
+  </ul>
+</section>
+
+<section id="sss">
+  <h2><span class="num">12</span>Sık Sorulan Sorular</h2>
+  <h3>Mesajım ne zaman ulaşır?</h3>
+  <p>Şişeler evrende belirli bir sürede yolculuk eder; mesajın sürpriz bir anda bir yolcuya ulaşır. Beklemek, uygulamanın sihrinin parçası!</p>
+  <h3>AI kişisi kim?</h3>
+  <p>Seçtiğin kişilikte (Samimi, Romantik, Komik...) sohbetlerini güzelleştiren bir yardımcıdır. Mesajlarını okumaz, sadece başlatıcı/öneri üretir.</p>
+  <h3>Aboneliğimi nasıl iptal ederim?</h3>
+  <p>Yıldız Tozu ile alınan abonelikler otomatik yenilenmez; dönem sonunda kendiliğinden sona erer. Dilediğin an iptal gerekmez.</p>
+  <h3>APK'da kamera izni istenmiyor</h3>
+  <p>Telefon ayarlarından <b>Uygulamalar → Bottled Slowly AI → İzinler → Kamera/Mikrofon</b> izinlerini ver.</p>
+  <h3>Sunucu yavaş açılıyor</h3>
+  <p>Ücretsiz altyapıda ilk açılış ~30 saniye sürebilir; ikinci girişte hızlanır.</p>
+</section>
+
+<footer>
+  Bottled Slowly AI · Kullanım Kılavuzu v1.1.4 · Destek: uygulama içi raporlama
+</footer>
+
+</div>
+</body>
+</html>

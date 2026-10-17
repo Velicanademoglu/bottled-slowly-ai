@@ -144,7 +144,7 @@ export default function RewardsPage() {
     <div className="min-h-[calc(100vh-64px)] px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="card p-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sand-500 dark:text-sand-300 text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-star-500 dark:text-star-300 text-sm font-medium mb-4">
             <Star className="w-4 h-4" />
             {balance.toLocaleString()} {t("space.stardust")}
           </div>

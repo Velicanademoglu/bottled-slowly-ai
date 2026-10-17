@@ -17,6 +17,7 @@ import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
 import RewardsPage from "./pages/RewardsPage";
 import StorePage from "./pages/StorePage";
+import PremiumPage from "./pages/PremiumPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import RevenueSimulationPage from "./pages/RevenueSimulationPage";
 import TemplatesPage from "./pages/TemplatesPage";
@@ -168,6 +169,14 @@ function App() {
           element={
             <ProtectedRoute>
               <StorePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/premium"
+          element={
+            <ProtectedRoute>
+              <PremiumPage />
             </ProtectedRoute>
           }
         />
