@@ -56,6 +56,10 @@ export default {
     chats: "Chats",
     profile: "Profile",
   },
+  chat: {
+    placeholder: "Type a message...",
+    caption: "Add a caption...",
+  },
   loot: {
     title: "Collection",
     subtitle: "Star items you earn with your daily streaks.",

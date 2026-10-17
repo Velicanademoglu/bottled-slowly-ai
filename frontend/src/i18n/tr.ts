@@ -56,6 +56,10 @@ export default {
     traveling: "Mesajın yolculukta...",
     discoveries: "keşif",
   },
+  chat: {
+    placeholder: "Mesajın...",
+    caption: "Bir başlık ekle...",
+  },
   loot: {
     title: "Koleksiyon",
     subtitle: "Günlük serilerinle kazandığın yıldız eşyaları.",

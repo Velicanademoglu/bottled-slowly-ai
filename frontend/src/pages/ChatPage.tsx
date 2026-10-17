@@ -431,7 +431,7 @@ export default function ChatPage() {
               type="text"
               value={input}
               onChange={(e) => handleTyping(e.target.value)}
-              placeholder={pendingFile ? "Add a caption..." : t("chat.placeholder", { defaultValue: "Mesajın..." })}
+              placeholder={pendingFile ? t("chat.caption") : t("chat.placeholder")}
               className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 outline-none px-2"
             />
             <button
