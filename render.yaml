@@ -6,7 +6,7 @@ services:
     region: frankfurt
     branch: main
     rootDir: backend
-    buildCommand: cd ../frontend && npm install && npm run build && cd ../backend && npm install && npx prisma migrate deploy && npx prisma generate && npm run build
+    buildCommand: cd ../frontend && npm install --include=dev && npm run build && cd ../backend && npm install --include=dev && npx prisma migrate deploy && npx prisma generate && npm run build
     startCommand: npm start
     envVars:
       - key: DATABASE_URL

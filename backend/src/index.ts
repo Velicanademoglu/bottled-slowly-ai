@@ -28,6 +28,7 @@ import templatesRoutes from "./routes/templates.js";
 import { createSocketServer } from "./socket.js";
 import { getSetting } from "./services/settings.js";
 import { APP_NAME, DEFAULT_LANGUAGE } from "./config.js";
+import { runSeed } from "./seed.js";
 
 const app = express();
 const server = createServer(app);
@@ -180,4 +181,6 @@ createSocketServer(server);
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend running on http://localhost:${PORT}`);
+  // Auto-seed admin user, bots, settings on first boot (idempotent)
+  runSeed().catch((e) => console.error("Seed failed:", e));
 });

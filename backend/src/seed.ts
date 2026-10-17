@@ -362,7 +362,7 @@ async function seedBotContent() {
   console.log("Seeded bot content");
 }
 
-async function seed() {
+export async function runSeed() {
   await seedCore();
   await seedSettings();
   await seedVessels();
@@ -372,11 +372,15 @@ async function seed() {
   console.log("Seed completed.");
 }
 
-seed()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// Run directly via `npm run db:seed`
+const entry = process.argv[1]?.replace(/\\/g, "/");
+if (entry?.endsWith("seed.ts") || entry?.endsWith("seed.js")) {
+  runSeed()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
