@@ -33,13 +33,10 @@ body {
 
 @layer utilities {
   .bg-space-gradient {
-    background: radial-gradient(ellipse at top, #bae6fd 0%, #e0f2fe 40%, #f0f9ff 100%);
+    background: radial-gradient(ellipse at top, #e0e7ff 0%, #f1f5f9 40%, #f8fafc 100%);
   }
   .dark .bg-space-gradient {
-    background:
-      radial-gradient(ellipse at 18% 0%, rgba(14, 116, 144, 0.3) 0%, transparent 38%),
-      radial-gradient(ellipse at 88% 18%, rgba(13, 148, 136, 0.15) 0%, transparent 34%),
-      linear-gradient(155deg, #0c4a6e 0%, #082f49 52%, #041e2e 100%);
+    background: radial-gradient(ellipse at top, #1e1b4b 0%, #0f172a 40%, #030712 100%);
   }
   .bg-glass {
     background: rgba(255, 255, 255, 0.8);
@@ -48,29 +45,29 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.06);
   }
   .dark .bg-glass {
-    background: rgba(8, 47, 73, 0.7);
+    background: rgba(17, 24, 39, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
   .text-gradient {
-    background: linear-gradient(135deg, #0284c7 0%, #0d9488 50%, #d97706 100%);
+    background: linear-gradient(135deg, #d97706 0%, #7c3aed 50%, #0284c7 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   .dark .text-gradient {
-    background: linear-gradient(135deg, #7dd3fc 0%, #5eead4 50%, #fcd34d 100%);
+    background: linear-gradient(135deg, #fbbf24 0%, #a78bfa 50%, #38bdf8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   .text-gradient-soft {
-    background: linear-gradient(135deg, #0c4a6e 0%, #0284c7 100%);
+    background: linear-gradient(135deg, #374151 0%, #4f46e5 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   .dark .text-gradient-soft {
-    background: linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 100%);
+    background: linear-gradient(135deg, #e5e7eb 0%, #a5b4fc 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -79,10 +76,10 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-semibold text-white bg-gradient-to-r from-ocean-500 to-ocean-600 hover:from-ocean-400 hover:to-ocean-500 shadow-lg transition-all active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-semibold text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 shadow-lg transition-all active:scale-[0.98];
   }
   .dark .btn-primary {
-    @apply from-ocean-400 to-ocean-500 hover:from-ocean-300 hover:to-ocean-400 shadow-glow-cosmic;
+    @apply text-space-950 from-star-400 to-star-500 hover:from-star-300 hover:to-star-400 shadow-glow;
   }
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-medium text-gray-800 bg-white/80 border border-black/5 hover:bg-white transition-all active:scale-[0.98];
@@ -113,7 +110,7 @@ body {
   }
   .dark .card {
     @apply shadow-soft border-transparent;
-    background: rgba(8, 47, 73, 0.7);
+    background: rgba(17, 24, 39, 0.7);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -122,13 +119,13 @@ body {
     @apply flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium text-gray-500 hover:text-gray-900 transition;
   }
   .dark .nav-link {
-    @apply text-ocean-200/60 hover:text-white;
+    @apply text-gray-400 hover:text-white;
   }
   .nav-link-active {
-    @apply text-ocean-600;
+    @apply text-amber-600;
   }
   .dark .nav-link-active {
-    @apply text-ocean-300;
+    @apply text-star-400;
   }
 }
 

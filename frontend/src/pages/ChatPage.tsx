@@ -157,9 +157,14 @@ export default function ChatPage() {
   const handleAttach = async (kind: AttachKind) => {
     setError("");
     setPremiumAction(kind);
-    const ok = await spendFor(kind);
+    if (kind === "video_message") {
+      const ok = await spendFor(kind);
+      if (!ok) {
+        setPremiumAction(null);
+        return;
+      }
+    }
     setPremiumAction(null);
-    if (!ok) return;
     attachKindRef.current = kind;
     if (fileInputRef.current) {
       fileInputRef.current.accept =
@@ -181,9 +186,7 @@ export default function ChatPage() {
   const sendGift = async () => {
     setError("");
     setPremiumAction("gift_message");
-    const ok = await spendFor("gift_message");
     setPremiumAction(null);
-    if (!ok) return;
     try {
       const { data } = await conversationsApi.send(conversationId, "🎁 " + t("premium.gift"), undefined);
       setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]));
