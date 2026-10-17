@@ -115,10 +115,41 @@
       <p style="margin-bottom: 20px; color: #cbd5e1;">
         AI destekli, yavaş teslimatlı mesajlaşma uygulaması.
       </p>
-      <span class="status">Kod gönderildi — Render & Vercel deploy bekleniyor</span>
+      <span class="status">Yayına hazır — tek tıkla deploy</span>
       <p style="margin-top: 12px; color: #cbd5e1; font-size: 0.875rem;">
-        Son commit: <code>2273f2c</code> · main dalı GitHub'a pushlandı.
+        Son commit: <code>4d889e2</code> · main dalı GitHub'a pushlandı. Tüm tarama temiz, build'ler geçiyor.
       </p>
+    </div>
+
+    <div class="card" style="border-color: rgba(251,191,36,0.4);">
+      <h2>🚀 Bu Gece Yayına Al — Tek Servis (En Kolay)</h2>
+      <p style="color: #cbd5e1; margin-bottom: 16px;">
+        Backend + frontend + PostgreSQL tek Render servisinde. Ayrı Vercel deploy'una gerek yok.
+      </p>
+      <div class="links">
+        <a href="https://render.com/deploy?repo=https://github.com/Velicanademoglu/bottled-slowly-ai" target="_blank" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-weight: 700;">▶ Render'da Tek Tıkla Deploy Et</a>
+      </div>
+      <div class="step" style="margin-top: 16px;">
+        <div class="step-number">1</div>
+        <div>
+          <strong>Yukarıdaki butona tıkla</strong>
+          <p style="margin: 0; color: #cbd5e1;">Render hesabınla giriş yap (GitHub ile bağlanabilirsin, ücretsiz).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div>
+          <strong>"Apply" / "Deploy" butonuna bas</strong>
+          <p style="margin: 0; color: #cbd5e1;"><code>render.yaml</code> otomatik olarak ücretsiz PostgreSQL + Web Service oluşturur. Build ~5-8 dk sürer.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div>
+          <strong>Canlı URL'yi al</strong>
+          <p style="margin: 0; color: #cbd5e1;">Deploy bitince <code>https://bottled-slowly-ai.onrender.com</code> formatında URL verilir. Uygulama tamamen bu URL'den çalışır.</p>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -126,83 +157,45 @@
       <div class="links">
         <a href="https://github.com/Velicanademoglu/bottled-slowly-ai" target="_blank">GitHub Reposu</a>
         <a href="https://dashboard.render.com/" target="_blank">Render Dashboard</a>
-        <a href="https://vercel.com/dashboard" target="_blank">Vercel Dashboard</a>
+        <a href="https://vercel.com/dashboard" target="_blank">Vercel Dashboard (opsiyonel)</a>
       </div>
     </div>
 
     <div class="card">
-      <h2>Son Eklenen Özellikler</h2>
+      <h2>Uygulamadaki Özellikler</h2>
       <ul>
-        <li><strong>PWA desteği:</strong> Telefona ekleme, offline çalışma, service worker</li>
-        <li><strong>AI personları:</strong> Samimi, romantik, eğlenceli, derin, şiirsel, gizemli</li>
-        <li><strong>AI yanıt önerileri:</strong> Sohbete uygun 3 öneri</li>
-        <li><strong>Mesaj şablonları:</strong> Sık kullanılan mesajları kaydet, düzenle, sil</li>
-        <li><strong>Açık / koyu tema:</strong> Profil sayfasından geçiş</li>
-        <li><strong>PostgreSQL:</strong> Bulut için hazır Prisma schema ve migration</li>
+        <li><strong>Uzay teması:</strong> Korundu — nebula/yıldız paleti, açık/koyu mod</li>
+        <li><strong>Seri takvimi:</strong> 20 günlük yıldız ödül grid'i, alevli seri sayacı</li>
+        <li><strong>Koleksiyon:</strong> 12 açılabilir uzay eşyası (Yıldız Parçası → Sonsuzluk)</li>
+        <li><strong>Mesajlaşma:</strong> Foto, hediye, GIF, emoji ücretsiz · video mesajı 10 Yıldız Tozu</li>
+        <li><strong>AI:</strong> 6 persona, konuşma başlatıcı + yanıt önerileri (OpenAI yoksa fallback)</li>
+        <li><strong>PWA:</strong> Telefona ekleme, offline önbellek</li>
+        <li><strong>Ekonomi:</strong> Günlük ödül, görevler, reklam izle-kazan, mağaza</li>
+        <li><strong>Diğer:</strong> Şablonlar, profil, keşif, arkadaşlık, admin paneli, raporlama</li>
       </ul>
-    </div>
-
-    <div class="card">
-      <h2>Deploy Adımları</h2>
-      
-      <div class="step">
-        <div class="step-number">1</div>
-        <div>
-          <strong>Vercel'e giriş yap</strong>
-          <div class="code">vercel login</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-number">2</div>
-        <div>
-          <strong>Render'da Blueprint kullan</strong>
-          <p style="margin: 0; color: #cbd5e1;">
-            Dashboard'da "New +" → "Blueprint" seç, GitHub repo'sunu bağla. 
-            <code>render.yaml</code> otomatik PostgreSQL ve Web Service kurar.
-          </p>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-number">3</div>
-        <div>
-          <strong>Vercel'den frontend deploy et</strong>
-          <div class="code">vercel --prod</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-number">4</div>
-        <div>
-          <strong>Çevre değişkenlerini ayarla</strong>
-          <ul style="margin-top: 8px; color: #cbd5e1;">
-            <li>Render → <code>FRONTEND_URL</code>: Vercel URL'n</li>
-            <li>Vercel → <code>VITE_API_URL</code>: Render backend URL'n</li>
-          </ul>
-        </div>
-      </div>
     </div>
 
     <div class="card">
       <h2>Yerel Çalışma Durumu</h2>
       <ul style="color: #cbd5e1;">
-        <li><strong>Frontend:</strong> <a href="http://localhost:5173" target="_blank">http://localhost:5173</a> (✅ çalışıyor)</li>
-        <li><strong>Backend:</strong> <a href="http://localhost:3001/health" target="_blank">http://localhost:3001</a> (✅ health check OK)</li>
+        <li><strong>Backend build:</strong> ✅ tsc temiz</li>
+        <li><strong>Frontend build:</strong> ✅ vite + PWA temiz</li>
+        <li><strong>i18n:</strong> ✅ TR/EN tüm anahtarlar mevcut</li>
+        <li><strong>Prisma:</strong> ✅ PostgreSQL schema + migration hazır</li>
       </ul>
     </div>
 
     <div class="card">
       <h2>Canlı URL'ler (Deploy Sonrası)</h2>
       <ul style="color: #cbd5e1;">
-        <li><strong>Frontend (Vercel):</strong> Henüz deploy edilmedi — dashboard'dan kontrol edin</li>
-        <li><strong>Backend (Render):</strong> Henüz deploy edilmedi — dashboard'dan kontrol edin</li>
+        <li><strong>Uygulama:</strong> Render URL'n (deploy sonrası buraya ekle)</li>
         <li><strong>Health Check:</strong> <code>GET /health</code></li>
+        <li><strong>Not:</strong> Ücretsiz planda 15 dk hareketsizlikte uyku moduna geçer; ilk açılış ~30 sn sürebilir.</li>
       </ul>
     </div>
 
     <div class="footer">
-      Son güncelleme: 21 Eylül 2026
+      Son güncelleme: 17 Ekim 2026
     </div>
   </div>
 </body>
