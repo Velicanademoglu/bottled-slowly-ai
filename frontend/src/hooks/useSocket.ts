@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { getAuthToken } from "../lib/api";
+import { getAuthToken, API_BASE_URL } from "../lib/api";
 
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
@@ -10,7 +10,7 @@ export function useSocket() {
     const token = getAuthToken();
     if (!token) return;
 
-    const socket = io(import.meta.env.DEV ? window.location.origin : import.meta.env.VITE_API_URL || "", {
+    const socket = io(import.meta.env.DEV ? window.location.origin : API_BASE_URL, {
       auth: { token },
       transports: ["websocket", "polling"],
     });

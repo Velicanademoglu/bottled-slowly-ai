@@ -13,8 +13,12 @@ import type {
   ChatMessage,
 } from "../types";
 
+export const API_BASE_URL = import.meta.env.DEV
+  ? ""
+  : import.meta.env.VITE_API_URL || "https://bottled-slowly-ai.onrender.com";
+
 const api = axios.create({
-  baseURL: import.meta.env.DEV ? "" : import.meta.env.VITE_API_URL || "",
+  baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
