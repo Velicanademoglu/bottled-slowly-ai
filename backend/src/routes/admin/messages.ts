@@ -131,4 +131,40 @@ router.get("/chats/:id", async (req: AuthRequest, res) => {
   res.json(conversation);
 });
 
+// Moderation: permanently delete a space message and its journeys.
+router.delete("/space/:id", async (req: AuthRequest, res) => {
+  const adminId = req.userId!;
+  const id = Number(req.params.id);
+  if (Number.isNaN(id)) {
+    res.status(400).json({ error: "Invalid message id" });
+    return;
+  }
+  const message = await prisma.spaceMessage.findUnique({ where: { id } });
+  if (!message) {
+    res.status(404).json({ error: "Message not found" });
+    return;
+  }
+  await prisma.spaceMessage.delete({ where: { id } });
+  await logAdminAction(adminId, "delete_space_message", "space_message", String(id));
+  res.json({ ok: true, deletedId: id });
+});
+
+// Moderation: permanently delete a conversation and all its messages.
+router.delete("/chats/:id", async (req: AuthRequest, res) => {
+  const adminId = req.userId!;
+  const id = Number(req.params.id);
+  if (Number.isNaN(id)) {
+    res.status(400).json({ error: "Invalid conversation id" });
+    return;
+  }
+  const conversation = await prisma.conversation.findUnique({ where: { id } });
+  if (!conversation) {
+    res.status(404).json({ error: "Conversation not found" });
+    return;
+  }
+  await prisma.conversation.delete({ where: { id } });
+  await logAdminAction(adminId, "delete_conversation", "conversation", String(id));
+  res.json({ ok: true, deletedId: id });
+});
+
 export default router;

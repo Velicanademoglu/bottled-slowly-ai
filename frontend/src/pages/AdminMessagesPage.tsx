@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { adminApi } from "../lib/api";
 import Alert from "../components/Alert";
-import { Loader2, MessageSquare, Rocket, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, MessageSquare, Rocket, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 
 interface SpaceMessage {
   id: number;
@@ -28,25 +28,53 @@ export default function AdminMessagesPage() {
   const [chats, setChats] = useState<ChatConversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [expandedChat, setExpandedChat] = useState<number | null>(null);
 
+  const load = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const [spaceRes, chatsRes] = await Promise.all([adminApi.spaceMessages(), adminApi.chats()]);
+      setSpaceMessages(spaceRes.data.messages as SpaceMessage[]);
+      setChats(chatsRes.data.conversations as ChatConversation[]);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      setError(axiosErr.response?.data?.error || t("common.error"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const [spaceRes, chatsRes] = await Promise.all([adminApi.spaceMessages(), adminApi.chats()]);
-        setSpaceMessages(spaceRes.data.messages as SpaceMessage[]);
-        setChats(chatsRes.data.conversations as ChatConversation[]);
-      } catch (err: unknown) {
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        setError(axiosErr.response?.data?.error || t("common.error"));
-      } finally {
-        setLoading(false);
-      }
-    };
     load();
   }, []);
+
+  const removeSpaceMessage = async (id: number) => {
+    if (!window.confirm("Bu uzay mesajını ve yolculuk geçmişini kalıcı olarak silmek istediğine emin misin?")) return;
+    setError("");
+    setMessage("");
+    try {
+      await adminApi.deleteSpaceMessage(id);
+      setMessage("Uzay mesajı silindi.");
+      await load();
+    } catch {
+      setError("Silme başarısız");
+    }
+  };
+
+  const removeChat = async (id: number) => {
+    if (!window.confirm("Bu sohbeti ve tüm mesajlarını kalıcı olarak silmek istediğine emin misin?")) return;
+    setError("");
+    setMessage("");
+    try {
+      await adminApi.deleteChat(id);
+      setMessage("Sohbet silindi.");
+      await load();
+    } catch {
+      setError("Silme başarısız");
+    }
+  };
 
   return (
     <div className="min-h-screen px-4 py-8">
@@ -74,6 +102,7 @@ export default function AdminMessagesPage() {
         </div>
 
         {error && <Alert type="error" className="mb-5">{error}</Alert>}
+        {message && <Alert type="success" className="mb-5">{message}</Alert>}
 
         {loading ? (
           <div className="flex items-center justify-center py-12 text-gray-400">
@@ -91,6 +120,13 @@ export default function AdminMessagesPage() {
                     <Rocket className="w-5 h-5 text-star-400" />
                     <span className="font-semibold text-white">{msg.sender.username}</span>
                     <span className="text-xs text-gray-500">{msg.vesselKey} • {msg.status}</span>
+                    <button
+                      onClick={() => removeSpaceMessage(msg.id)}
+                      className="ml-auto p-2 rounded-lg text-red-400 hover:bg-red-500/10"
+                      title="Mesajı sil"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                   <p className="text-gray-300 bg-white/5 rounded-xl p-4">{msg.content}</p>
                   <div className="text-xs text-gray-500 mt-3">{new Date(msg.createdAt).toLocaleString()}</div>
@@ -105,21 +141,38 @@ export default function AdminMessagesPage() {
             ) : (
               chats.map((chat) => (
                 <div key={chat.id} className="card p-5">
-                  <button
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setExpandedChat(expandedChat === chat.id ? null : chat.id)}
-                    className="w-full flex items-center justify-between"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") setExpandedChat(expandedChat === chat.id ? null : chat.id);
+                    }}
+                    className="w-full flex items-center justify-between cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <MessageSquare className="w-5 h-5 text-cosmic-400" />
                       <span className="font-semibold text-white">{chat.title || `Conversation #${chat.id}`}</span>
                       <span className="text-xs text-gray-500">{chat.members.length} members • {chat.messages.length} messages</span>
                     </div>
-                    {expandedChat === chat.id ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400" />
-                    )}
-                  </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeChat(chat.id);
+                        }}
+                        className="p-2 rounded-lg text-red-400 hover:bg-red-500/10"
+                        title="Sohbeti sil"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      {expandedChat === chat.id ? (
+                        <ChevronUp className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+                  </div>
 
                   {expandedChat === chat.id && (
                     <div className="mt-4 space-y-3">

@@ -261,6 +261,13 @@ export const adminApi = {
   spaceMessages: (params?: { senderId?: number; status?: string; page?: number; pageSize?: number }) => api.get<{ messages: unknown[]; pagination: { page: number; pageSize: number; total: number; pages: number } }>("/api/admin/messages/space", { params }),
   chats: (params?: { userId?: number; page?: number; pageSize?: number }) =>
     api.get<{ conversations: unknown[]; pagination: { page: number; pageSize: number; total: number; pages: number } }>("/api/admin/messages/chats", { params }),
+  deleteSpaceMessage: (id: number) => api.delete<{ ok: boolean }>(`/api/admin/messages/space/${id}`),
+  deleteChat: (id: number) => api.delete<{ ok: boolean }>(`/api/admin/messages/chats/${id}`),
+  userMessages: (id: number) => api.get<unknown>(`/api/admin/users-extra/${id}/messages`),
+  userConversations: (id: number) => api.get<unknown>(`/api/admin/users-extra/${id}/conversations`),
+  grantStardust: (id: number, amount: number, reason?: string) =>
+    api.post<{ ok: boolean; balance?: number }>(`/api/admin/users-extra/${id}/grant-stardust`, { amount, reason }),
+  deleteUser: (id: number) => api.delete<{ ok: boolean }>(`/api/admin/users/${id}`),
 };
 
 export default api;

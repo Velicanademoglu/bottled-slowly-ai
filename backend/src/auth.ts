@@ -1,10 +1,19 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { canAccessAdmin } from "./lib/roles.js";
 
+// Never fall back to a well-known default in production: a forgeable secret
+// would allow complete auth bypass. Random per-boot secret invalidates old
+// tokens on restart instead.
 const JWT_SECRET =
-  process.env.APP_JWT_SECRET || process.env.JWT_SECRET || "default-secret-change-me";
+  process.env.APP_JWT_SECRET ||
+  process.env.JWT_SECRET ||
+  (process.env.NODE_ENV === "production"
+    ? (console.warn("[auth] WARNING: no JWT secret configured - using ephemeral random secret"),
+      crypto.randomBytes(32).toString("hex"))
+    : "default-secret-change-me");
 
 export interface AuthRequest extends Request {
   userId?: number;
@@ -42,15 +51,25 @@ export async function loadUserFromToken(token: string) {
   return user;
 }
 
-export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
+export async function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
   try {
-    const payload = verifyToken(header.slice(7));
-    req.userId = payload.userId;
+    const user = await loadUserFromToken(header.slice(7));
+    if (!user) {
+      res.status(401).json({ error: "User not found" });
+      return;
+    }
+    if (user.status !== "ACTIVE") {
+      res.status(403).json({ error: "ACCOUNT_" + user.status });
+      return;
+    }
+    req.userId = user.id;
+    req.userRole = user.role;
+    req.userStatus = user.status;
     next();
   } catch {
     res.status(401).json({ error: "Invalid token" });
@@ -67,6 +86,10 @@ export async function authWithRoleMiddleware(req: AuthRequest, res: Response, ne
     const user = await loadUserFromToken(header.slice(7));
     if (!user) {
       res.status(401).json({ error: "User not found" });
+      return;
+    }
+    if (user.status !== "ACTIVE") {
+      res.status(403).json({ error: "ACCOUNT_" + user.status });
       return;
     }
     req.userId = user.id;

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { adminApi } from "../lib/api";
 import Alert from "../components/Alert";
 import Avatar from "../components/Avatar";
-import { Loader2, Search, Ban, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, Search, Ban, CheckCircle2, AlertTriangle, Coins, Trash2 } from "lucide-react";
 
 interface AdminUser {
   id: number;
@@ -73,6 +73,43 @@ export default function AdminUsersPage() {
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { error?: string } } };
       setError(axiosErr.response?.data?.error || t("common.error"));
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const grantStardust = async (id: number, username: string) => {
+    const raw = window.prompt(`${username} kullanıcısına yüklenecek Yıldız Tozu miktarı:`);
+    if (raw === null) return;
+    const amount = Math.floor(Number(raw));
+    if (!Number.isFinite(amount) || amount === 0) {
+      setError("Geçersiz miktar");
+      return;
+    }
+    setUpdating(id);
+    setError("");
+    try {
+      await adminApi.grantStardust(id, amount, "admin_panel");
+      setError("");
+      window.alert(`${amount} Yıldız Tozu ${username} hesabına yüklendi.`);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      setError(axiosErr.response?.data?.error || t("common.error"));
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const removeUser = async (id: number, username: string) => {
+    if (!window.confirm(`${username} kullanıcısını ve TÜM verilerini (mesajlar, sohbetler, bakiye) kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz!`)) return;
+    setUpdating(id);
+    setError("");
+    try {
+      await adminApi.deleteUser(id);
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string } } };
+      setError(axiosErr.response?.data?.error || "Silme başarısız");
     } finally {
       setUpdating(null);
     }
@@ -163,6 +200,14 @@ export default function AdminUsersPage() {
                   </div>
 
                   <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => grantStardust(user.id, user.username)}
+                      disabled={updating === user.id}
+                      className="p-2 rounded-lg text-star-400 hover:bg-star-400/10"
+                      title="Yıldız Tozu yükle"
+                    >
+                      <Coins className="w-5 h-5" />
+                    </button>
                     <select
                       value={user.role}
                       disabled={updating === user.id}
@@ -184,6 +229,15 @@ export default function AdminUsersPage() {
                         <option key={s} value={s}>{s}</option>
                       ))}
                     </select>
+
+                    <button
+                      onClick={() => removeUser(user.id, user.username)}
+                      disabled={updating === user.id}
+                      className="p-2 rounded-lg text-red-400 hover:bg-red-500/10"
+                      title="Kullanıcıyı kalıcı sil"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
               </div>

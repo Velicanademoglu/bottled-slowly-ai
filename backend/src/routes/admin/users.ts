@@ -127,4 +127,29 @@ router.post("/:id/role", requireAdmin, async (req: AuthRequest, res) => {
   res.json({ id: user.id, role: user.role });
 });
 
+// Permanently delete a user and all related data (SUPER_ADMIN only).
+router.delete("/:id", requireAdmin, async (req: AuthRequest, res) => {
+  const id = Number(req.params.id);
+  if (Number.isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+  if (!canManageAdmins(req.userRole || "")) {
+    res.status(403).json({ error: "Only super admins can delete users" });
+    return;
+  }
+  if (id === req.userId) {
+    res.status(400).json({ error: "Cannot delete your own account" });
+    return;
+  }
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+  await prisma.user.delete({ where: { id } });
+  await trackEvent(req.userId || null, "admin_user_delete", { targetUserId: id, username: user.username });
+  res.json({ ok: true, deletedId: id });
+});
+
 export default router;
