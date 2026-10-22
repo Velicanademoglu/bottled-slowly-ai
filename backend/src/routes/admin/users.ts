@@ -127,6 +127,25 @@ router.post("/:id/role", requireAdmin, async (req: AuthRequest, res) => {
   res.json({ id: user.id, role: user.role });
 });
 
+// Manually verify a user's email (used when SMTP is not configured or link expired).
+router.post("/:id/verify-email", requireAdmin, async (req: AuthRequest, res) => {
+  const id = Number(req.params.id);
+  if (Number.isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+  const user = await prisma.user.update({
+    where: { id },
+    data: { emailVerified: true },
+  });
+  await prisma.emailVerification.updateMany({
+    where: { userId: id, used: false },
+    data: { used: true },
+  });
+  await trackEvent(req.userId || null, "admin_user_email_verified", { targetUserId: id });
+  res.json({ id: user.id, emailVerified: user.emailVerified });
+});
+
 // Permanently delete a user and all related data (SUPER_ADMIN only).
 router.delete("/:id", requireAdmin, async (req: AuthRequest, res) => {
   const id = Number(req.params.id);
