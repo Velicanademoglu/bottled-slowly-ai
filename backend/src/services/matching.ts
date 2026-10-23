@@ -67,7 +67,7 @@ export async function findBestMatch(senderId: number, weights: Partial<MatchWeig
 
   const excludeIds = new Set([senderId, ...blockedIds, ...previouslySentIds]);
 
-  const candidates = await prisma.user.findMany({
+  let candidates = await prisma.user.findMany({
     where: {
       status: "ACTIVE",
       emailVerified: true,
@@ -84,6 +84,20 @@ export async function findBestMatch(senderId: number, weights: Partial<MatchWeig
   });
 
   if (candidates.length === 0) return null;
+
+  // Hard filter: sender's preferred gender (bottles only reach matching people).
+  const preferredGender = sender.preferences?.preferredGender;
+  if (preferredGender && preferredGender !== "EVERYONE") {
+    candidates = candidates.filter((c) => c.profile?.gender === preferredGender);
+  }
+  // Hard filter: candidate's own preference about the sender.
+  const senderGender = sender.profile?.gender;
+  if (senderGender) {
+    candidates = candidates.filter((c) => {
+      const candidatePref = c.preferences?.preferredGender || "EVERYONE";
+      return candidatePref === "EVERYONE" || candidatePref === senderGender;
+    });
+  }
 
   const scored = candidates.map((candidate) => {
     const age = calculateAge(candidate.profile?.birthDate || null);

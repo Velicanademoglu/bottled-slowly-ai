@@ -6,6 +6,7 @@ import fs from "fs";
 import { prisma } from "../db.js";
 import { saveDataUrl } from "../services/uploads.js";
 import { appSocket } from "../socket.js";
+import { isBotEmail, scheduleBotReply } from "../services/botEngine.js";
 import type { AuthRequest } from "../auth.js";
 
 const router = Router();
@@ -189,6 +190,19 @@ router.post("/:id/messages", upload.single("media"), async (req: AuthRequest, re
 
   if (appSocket) {
     appSocket.to(`conv:${id}`).emit("message", message);
+  }
+
+  // If the conversation has a bot member, it replies shortly after the human speaks.
+  const memberIds = (
+    await prisma.conversationMember.findMany({ where: { conversationId: id }, select: { userId: true } })
+  ).map((m) => m.userId);
+  const convUsers = await prisma.user.findMany({
+    where: { id: { in: memberIds } },
+    select: { id: true, email: true },
+  });
+  const sender = convUsers.find((u) => u.id === userId);
+  if (sender && !isBotEmail(sender.email) && convUsers.some((u) => isBotEmail(u.email))) {
+    scheduleBotReply(id);
   }
 
   res.status(201).json(message);

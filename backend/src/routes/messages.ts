@@ -8,6 +8,7 @@ import { trackEvent } from "../services/analytics.js";
 import { createNotification } from "../services/notifications.js";
 import { addTransaction, getOrCreateUserStardust } from "../services/stardust.js";
 import { getCountryCoordinates } from "../lib/countries.js";
+import { isBotEmail, scheduleBotAccept } from "../services/botEngine.js";
 
 const router = Router();
 
@@ -174,6 +175,15 @@ router.post("/:id/cast", async (req: AuthRequest, res) => {
     messageId: message.id,
     recipientId: match.user.id,
   });
+
+  // Bot recipients accept on their own shortly after the bottle arrives.
+  if (isBotEmail(match.user.email)) {
+    const botRecipient = await prisma.messageRecipient.findFirst({
+      where: { journeyId: journey.id, userId: match.user.id },
+      select: { id: true },
+    });
+    if (botRecipient) scheduleBotAccept(botRecipient.id);
+  }
 
   res.json({
     message: updatedMessage,

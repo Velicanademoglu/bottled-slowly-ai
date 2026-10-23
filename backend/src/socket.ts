@@ -2,6 +2,7 @@ import { Server as HttpServer } from "http";
 import { Server as SocketServer } from "socket.io";
 import { prisma } from "./db.js";
 import { verifyToken } from "./auth.js";
+import { isBotEmail, scheduleBotReply } from "./services/botEngine.js";
 
 export let appSocket: SocketServer | null = null;
 
@@ -61,6 +62,19 @@ export function createSocketServer(server: HttpServer) {
       await prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } });
 
       io.to(`conv:${conversationId}`).emit("message", message);
+
+      // Bot members reply shortly after a human message arrives via socket.
+      const memberIds = (
+        await prisma.conversationMember.findMany({ where: { conversationId }, select: { userId: true } })
+      ).map((m) => m.userId);
+      const convUsers = await prisma.user.findMany({
+        where: { id: { in: memberIds } },
+        select: { id: true, email: true },
+      });
+      const senderUser = convUsers.find((u) => u.id === userId);
+      if (senderUser && !isBotEmail(senderUser.email) && convUsers.some((u) => isBotEmail(u.email))) {
+        scheduleBotReply(conversationId);
+      }
     });
 
     socket.on("disconnect", () => {});
