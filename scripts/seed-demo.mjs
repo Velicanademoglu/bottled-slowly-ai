@@ -74,10 +74,10 @@ const run = async () => {
 
     const birth = `19${60 + ((p.age + 4) % 40)}-0${1 + (i % 9)}-1${i % 9}`;
     await api("/api/profile/me", { method: "PUT", body: JSON.stringify({ birthDate: birth, gender: p.gender, country: p.city.includes("Berlin") ? "Germany" : p.city.includes("Londra") ? "United Kingdom" : "Turkey", bio: p.bio, onboardingCompleted: true }) }, token);
-    await api("/api/preferences", { method: "PUT", body: JSON.stringify({ preferredGender: "EVERYONE", minAge: 18, maxAge: 65, conversationGoals: ["friendship", "deep_talks"] }) }, token);
-    await api("/api/languages", { method: "POST", body: JSON.stringify({ language: "Turkish", level: "NATIVE" }) }, token);
+    await api("/api/profile/preferences", { method: "PUT", body: JSON.stringify({ preferredGender: "EVERYONE", minAge: 18, maxAge: 65, conversationGoals: ["friendship", "deep_talks"] }) }, token);
+    await api("/api/profile/languages", { method: "POST", body: JSON.stringify({ language: "Turkish", level: "NATIVE" }) }, token);
     for (const interest of p.interests) {
-      await api("/api/interests", { method: "POST", body: JSON.stringify({ interest }) }, token);
+      await api("/api/profile/interests", { method: "POST", body: JSON.stringify({ interest }) }, token);
     }
     const ver = await api(`/api/admin/users/${uid}/verify-email`, { method: "POST" }, ah);
     log(`user ${p.username}: id=${uid} verify=${ver.status}`);
